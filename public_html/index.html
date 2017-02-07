@@ -55,7 +55,14 @@
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
+   <div class="container" id="landing">
+      <p class=""></p> <h3>Welcome </h3>
+      <div role="modal"class="modal-dialog modal-sm" id="mnu">
+         <button class="modal-content btn well-sm">Default</button>
+      </div>
 
+   </div>
+        <p class="divider"></p>
    <div class="container" id="proj">
    
    </div>
@@ -87,6 +94,8 @@
          var qb = app.qb;
          var db = qb.db;
          var co;var res = "";
+         if ((UILoad.pid === '')){$('#proj').hide();$('#landing').show();}
+         else{$('#proj').show();$('#landing').hide();}
          function cc(which){
             var c = 0;
 			var q = "SELECT count(*) AS c FROM cards";

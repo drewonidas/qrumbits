@@ -6,11 +6,11 @@
 
 var UILoad = {
    //Constructor
-   pid:1,
+   pid:'',
    prj:{},
    tsb:{},
    crds:{},
-    /**
+   /**
    * @param id {int} 
    * @param size{int} size of col 2 - 4
    * @param  pid{int} 
@@ -18,12 +18,14 @@ var UILoad = {
    */
    placeTaskBar : function(obj,pid,pos,size){
        //TODO: build 
+       var func = '';
        if (size === undefined) size = 3;
-       var tsbr = '<div class="container-fluid col-sm-'+size+'  col-sm-offset-1 well " id="tid_'+
+       if (pid === 0) func ="app.createProj()";else{func = 'cc(this)';}
+       var tsbr = '<div class="container-fluid col-sm-'+size+'  col-xs-offset-1 well " id="tid_'+
                pid+'_'+obj.item(pos).tid+'" ondrop="drop(event)" ondragover="allowDrop(event)">\
             <div class="row" contenteditable="false" ondrop="preventDrop(event)" id="tt">\
               <h4 class="col-sm-5 text-center chead" >#'+obj.item(pos).nm+'</h4>\
-              <a class="col-sm-2 col-sm-offset-5 btn well well-sm " onclick="cc(this)">+</a>\
+              <a class="col-sm-2 col-sm-offset-5 btn well well-sm " onclick="'+func+'">+</a>\
             </div><!--/column header-->\
          </div>'
       return tsbr;
@@ -41,7 +43,7 @@ var UILoad = {
             var ts = UILoad.placeTaskBar(this.tsb,UILoad.pid,a);
             $("#proj").append(ts);
          }
-         console.log($("#proj").children().length,this.crds);
+         //console.log($("#proj").children().length,this.crds);
          for (var a = 0; a < this.crds.length; a++){
             var l = UILoad.pid + '_' + this.crds.item(a).tid + '_' +this.crds.item(a).cid;
             var base = document.createElement("div");
@@ -53,7 +55,6 @@ var UILoad = {
          for (var a = 0 ; a < $("#proj").children().length;a++){//post
             app.colNames.push($($("#proj").children().get(a)).attr("id"));
          }
-         
       },220);
    },
    
