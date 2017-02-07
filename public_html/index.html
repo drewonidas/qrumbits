@@ -26,12 +26,15 @@
     </head>
     <body>
         <!--[if lt IE 8]>
-            <p class="browserupgrade">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+            <p class="browserupgrade">You are using an <strong>outdated</strong> 
+        browser. Please <a href="http://browsehappy.com/">upgrade your browser</a>
+        to improve your experience.</p>
         <![endif]-->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" 
+                  data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
@@ -53,40 +56,7 @@
       </div>
     </nav>
 
-    <!-- Main jumbotron for a primary marketing message or call to action -->
-    <!--<div class="jumbotron">
-      <div class="container">
-        <h1>Hello, world!</h1>
-        <p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        <p><a class="btn btn-primary btn-lg" href="#" role="button">Learn more &raquo;</a></p>
-      </div>
-    </div>--> <!--task-status column-->
-<!--         <div class="container-fluid col-sm-3  col-sm-offset-1 well " id="tid_1_0" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <div class="row" contenteditable="false" ondrop="preventDrop(event)" id="tt"> column header
-              <h4 class="col-sm-5 text-center chead" >#todo</h4>
-              <a class="col-sm-2 col-sm-offset-5 btn well well-sm " onclick="cc(this)">+</a>
-            </div>/column header
-
-         </div>
-
-          task-status column
-          <div class="container-fluid col-sm-3  col-sm-offset-1 well " id="tid_1_1" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <div class="row"> column header
-              <h4 class="col-sm-5 text-center chead" >#in-progress</h4>
-              <a class="col-sm-2 col-sm-offset-5 btn well well-sm " onclick="cc(this)">+</a>
-            </div>/column header
-         </div>
-
-           task-status column
-         <div class="container-fluid col-sm-3 col-sm-offset-1 well " id="tid_1_2" ondrop="drop(event)" ondragover="allowDrop(event)">
-            <div class="row"> column header
-              <h4 class="col-sm-5 text-center chead" >#done</h4>
-              <a class="col-sm-2 col-sm-offset-5 btn well well-sm " onclick="cc(this)">+</a>
-            </div>/column header
-         </div>
-      </div>-->
-    <!--<button class="btn pull-right right ">>></button>-->
-   <div class=" container container-fluid" id="proj">
+   <div class="container" id="proj">
    
    </div>
       <hr>
@@ -139,19 +109,7 @@
 				   ,['"'+name+'"','"'+tid+'"','""','0',1]));
 
 					var l = spl[1] +'_'+ spl[2] +'_'+ c;
-				   var newchild = 
-				  '<div id="ts_'+ l
-				  +'" class="well container-fluid" ondrag="drag(event)" draggable="true">\
-				   <a  data-target="#'+ l
-				   +'" data-toggle="collapse" class="text-justify">'+name+'</a>\
-				   <div id="'+ l +'" class="collapse" >\
-					  <label> description:</label>\
-					  <textarea id="ta_'+ l
-				   +'"style="width: 100%"></textarea>\
-				   </div><a class="text-justify"></a> \
-				   <button class="btn pull-right" \n\
-					  onclick="adv(this)" title="Advance">>></button>\
-				   </div>';
+				   var newchild = UILoad.cardTemplate(l,name);
 				   $(parent).append(newchild);
 				   app.cards["ts_"+ l] = c;
 					
@@ -174,7 +132,7 @@
          function drag(ev) {
             //console.log(ev.target.id);
           co =ev.srcElement.id;
-           console.log(co);
+           //console.log(co);
          }
 
          function drop(ev) {
@@ -192,7 +150,9 @@
 		   }
          }
          function gtid(ths){//get parent
-            var parent = ($(ths).parent().parent());
+            var parent = ($(ths).parent()); 
+            while(!match(parent.attr('id')))
+               parent = parent.parent();
             var tid = $(parent).attr("id");
             var spl =  tid.split("_");
             return (spl);

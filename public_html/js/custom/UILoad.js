@@ -11,13 +11,15 @@ var UILoad = {
    tsb:{},
    crds:{},
     /**
-   * @param id {} 
-   * @param  {int} 
+   * @param id {int} 
+   * @param size{int} size of col 2 - 4
+   * @param  pid{int} 
    * @return {null}
    */
-   placeTaskBar : function(obj,pid,pos){
-       //TODO: Implement Me 
-       var tsbr = '<div class="container-fluid col-sm-3  col-sm-offset-1 well " id="tid_'+
+   placeTaskBar : function(obj,pid,pos,size){
+       //TODO: build 
+       if (size === undefined) size = 3;
+       var tsbr = '<div class="container-fluid col-sm-'+size+'  col-sm-offset-1 well " id="tid_'+
                pid+'_'+obj.item(pos).tid+'" ondrop="drop(event)" ondragover="allowDrop(event)">\
             <div class="row" contenteditable="false" ondrop="preventDrop(event)" id="tt">\
               <h4 class="col-sm-5 text-center chead" >#'+obj.item(pos).nm+'</h4>\
@@ -71,8 +73,9 @@ var UILoad = {
          <label> description:</label>\
          <textarea id="ta_'+ l
       +'"style="width: 100%"></textarea>\
-      </div><a class="text-justify"></a> \
-      <button class="btn pull-right" \n\
+         <button onclick="$(this).parent().parent().hide()">delete</button>\
+      </div>\
+      <button class="btn pull-right" \
          onclick="adv(this)" title="Advance">>></button>\
       </div>';
       return newchild;
