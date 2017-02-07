@@ -57,8 +57,10 @@
     </nav>
    <div class="container" id="landing">
       <p class=""></p> <h3>Welcome </h3>
-      <div role="modal"class="modal-dialog modal-sm" id="mnu">
-         <button class="modal-content btn well-sm">Default</button>
+      <div class="modal" id="mnu">
+         <div class="modal-dialog modal-sm" >
+            <button class="modal-content btn well-sm">Default</button>
+         </div>
       </div>
 
    </div>
@@ -94,7 +96,7 @@
          var qb = app.qb;
          var db = qb.db;
          var co;var res = "";
-         if ((UILoad.pid === '')){$('#proj').hide();$('#landing').show();}
+         if ((UILoad.pid == 0)){$('#proj').hide();$('#landing').show();}
          else{$('#proj').show();$('#landing').hide();}
          function cc(which){
             var c = 0;
@@ -113,24 +115,10 @@
             tid = spl[2];
 			setTimeout(function (){
 				if ((name = prompt("Create New Task"))){
-					qb.transaction(qb.insert('cards'
-				   ,['cname','tid','cdesc','assign','pid']
-				   ,['"'+name+'"','"'+tid+'"','""','0',1]));
-
-					var l = spl[1] +'_'+ spl[2] +'_'+ c;
-				   var newchild = UILoad.cardTemplate(l,name);
-				   $(parent).append(newchild);
-				   app.cards["ts_"+ l] = c;
-					
-					//console.log(p);
-				   qb.transaction(qb.update('cards'
-				   ,['cname','tid','cdesc','assign']
-				   ,['"'+name+'"','"'+tid+'"','"Nothing to show"','0']));
+                   var l = gtid(which);
+					app.createCard(name,l,parent,c);
 				}
 			},220);//needs testing // working *i3 4th gen chrome 1.7ghz
-			
-            
-            
          };
          function allowDrop(ev) {
             ev.preventDefault();

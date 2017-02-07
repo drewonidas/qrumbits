@@ -24,8 +24,8 @@ var UILoad = {
        var tsbr = '<div class="container-fluid col-sm-'+size+'  col-xs-offset-1 well " id="tid_'+
                pid+'_'+obj.item(pos).tid+'" ondrop="drop(event)" ondragover="allowDrop(event)">\
             <div class="row" contenteditable="false" ondrop="preventDrop(event)" id="tt">\
-              <h4 class="col-sm-5 text-center chead" >#'+obj.item(pos).nm+'</h4>\
-              <a class="col-sm-2 col-sm-offset-5 btn well well-sm " onclick="'+func+'">+</a>\
+              <h4 class="col-sm-6 text-center chead" >#'+obj.item(pos).nm+'</h4>\
+              <a class="col-sm-2 pull-right btn well well-sm " onclick="'+func+'">+</a>\
             </div><!--/column header-->\
          </div>'
       return tsbr;

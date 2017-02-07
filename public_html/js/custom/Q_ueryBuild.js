@@ -10,7 +10,7 @@ var Q_ueryBuild = {
    transaction: function (q) {
       this.db.transaction(function (tx) {
          tx.executeSql(q);
-      })
+      },function (er){console.log(er);})
    }, /**
     * @param selection {} 
     * @param table {} 
@@ -50,7 +50,7 @@ var Q_ueryBuild = {
     */
    init: function () {
       //TODO: Implement Me 
-      var tb0 = "CREATE TABLE proj (\
+      var tb0 = "CREATE TABLE IF NOT EXISTS proj (\
    pid INTEGER NOT NULL ,\
    pname varchar(30) NOT NULL,\
    date_created date NOT NULL,\
@@ -59,14 +59,14 @@ var Q_ueryBuild = {
    author_id integer NOT NULL,\
    PRIMARY KEY (pid)\
 );";
-      var tb1 = "CREATE TABLE taskbars (\
+      var tb1 = "CREATE TABLE IF NOT EXISTS taskbars (\
    tid INTEGER NOT NULL ,\
    tname VARCHAR(20) NOT NULL,\
    pid INTEGER NOT NULL,\
    pos INTEGER NOT NULL,\
    PRIMARY KEY (tid)\
 );";
-      var tb2 = "CREATE TABLE cards (\
+      var tb2 = "CREATE TABLE IF NOT EXISTS cards (\
    cid INTEGER NOT NULL ,\
    cname VARCHAR(20) NOT NULL,\
    tid INTEGER NOT NULL,\
@@ -75,7 +75,7 @@ var Q_ueryBuild = {
    assign INTEGER,\
    PRIMARY KEY (cid)\
 );";
-      var tb3 = "CREATE TABLE people (\
+      var tb3 = "CREATE TABLE IF NOT EXISTS people (\
    uid INTEGER NOT NULL ,\
    uname VARCHAR(20) NOT NULL,\
    uemail VARCHAR(72) NOT NULL,\

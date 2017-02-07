@@ -12,7 +12,8 @@ var app  = {
        app : function(){
          //Constructor
          this.qb.init();
-         if(UILoad.pid === '1'){
+         UILoad.pid = 1;
+         if(UILoad.pid >= '1'){
            app.read();
         }else{
            console.log("proj land")
@@ -59,8 +60,8 @@ var app  = {
    * @return {null}
    */
     createTaskBar  : function(name){
-       //TODO: Implement Me 
-       
+      //TODO: Implement Me 
+      
    },
 
 
@@ -68,9 +69,25 @@ var app  = {
    * @param name {} 
    * @return {null}
    */
-    createCard : function(name){
-       //TODO: Implement Me 
+    createCard : function(name,spl,parent,c){
+      //TODO: Implement Me 
+      var tid = $(parent).attr("id");
+      tid = tid.split('_')[2];
+      this.qb.transaction(this.qb.insert('cards'
+      ,['cname','tid','cdesc','assign','pid']
+      ,['"'+name+'"','"'+tid+'"','""','0',1]));
 
+       var l = spl[1] +'_'+ spl[2] +'_'+ c;
+      var newchild = UILoad.cardTemplate(l,name);
+      $(parent).append(newchild);
+      app.cards["ts_"+ l] = c;
+
+       console.log(this.qb.insert('cards'
+      ,['cname','tid','cdesc','assign','pid']
+      ,['"'+name+'"','"'+tid+'"','""','0',1]));
+//      app.qb.transaction(app.qb.update('cards'
+//      ,['cname','tid','cdesc','assign']
+//      ,['"'+name+'"','"'+tid+'"','"Nothing to show"','0'])); 
    },
 
 
