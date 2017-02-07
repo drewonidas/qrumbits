@@ -59,6 +59,7 @@
       <p class=""></p> <h3>Welcome </h3>
       <div class="modal" id="mnu">
          <div class="modal-dialog modal-sm" >
+            <textarea oninput="typ()"></textarea>
             <button class="modal-content btn well-sm">Default</button>
          </div>
       </div>
@@ -96,11 +97,13 @@
          var qb = app.qb;
          var db = qb.db;
          var co;var res = "";
+         var qt = 220;//universal time
          if ((UILoad.pid == 0)){$('#proj').hide();$('#landing').show();}
          else{$('#proj').show();$('#landing').hide();}
          function cc(which){
             var c = 0;
-			var q = "SELECT count(*) AS c FROM cards";
+			var q = qb.slct("cid as c",'cards',
+            "cid  = cid order by cid desc limit 1");
 			   db.transaction(function(tx){
                tx.executeSql(q,[],function(tx,rs){
                   c = rs.rows.item(0).c + 1;
@@ -118,8 +121,13 @@
                    var l = gtid(which);
 					app.createCard(name,l,parent,c);
 				}
-			},220);//needs testing // working *i3 4th gen chrome 1.7ghz
+			},app.qt);//needs testing // working *i3 4th gen chrome 1.7ghz
          };
+         function typ(ths){
+               //console.log($(ths).val());
+               app.editCard($(ths).attr('id').toString().split('_')[3],
+               'cdesc',$(ths).val());
+         }
          function allowDrop(ev) {
             ev.preventDefault();
          }
@@ -158,14 +166,11 @@
             var spl = gtid(ths);
             $('#'+app.colNames[spl[2]%app.colNames.length])
                    .append($(ths).parent());
-            qb.transaction(qb.update('cards'
-               ,"tid = '" +((spl[2]%app.colNames.length) + 1) +"'" 
-               ,'cid', '"' + $(ths).parent().attr('id').toString().split('_')[3]+'"'));
+            app.editCard($(ths).parent().attr('id').toString().split('_')[3],
+            'tid',((spl[2]%app.colNames.length) + 1));
+            
             $('#tid_'+spl[1]+'_'+(spl[2])).remove($(ths).parent());
-            console.log(qb.update('cards'
-               ,"tid = '" +spl[2]%app.colNames.length +"'" 
-               ,'cid', '"' + $(ths).parent().attr('id').toString().split('_')[3]+'"'));
-            $('#tid_'+ spl[1]+'_'+(spl[2])).remove($(ths).parent());
+            
          }
          function match(pnt){
             for (var a = 0;a < app.colNames.length;a++)
