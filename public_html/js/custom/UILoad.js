@@ -47,24 +47,25 @@ var UILoad = {
          for (var a = 0; a < this.crds.length; a++){
             var l = UILoad.pid + '_' + this.crds.item(a).tid + '_' +this.crds.item(a).cid;
             var base = document.createElement("div");
-            //$('#tid_' + UILoad.pid + '_' + this.crds.item(a).tid).text = 'hh';
+            //console.log(this.crds.item(a).cdesc);
             $(base).appendTo('#tid_' + UILoad.pid + '_' + this.crds.item(a).tid);
-            var crd = $(UILoad.cardTemplate(l,this.crds.item(a).nm));
+            var crd = $(UILoad.cardTemplate(l,this.crds.item(a).nm,this.crds.item(a).cdesc));
             $(base).replaceWith(crd);
          }
          for (var a = 0 ; a < $("#proj").children().length;a++){//post
             app.colNames.push($($("#proj").children().get(a)).attr("id"));
          }
-      },220);
+      },app.qt);
    },
    
    /**
    * @param ID {} 
    * @return {null}
    */
-   cardTemplate : function(l,cname){
+   cardTemplate : function(l,cname,txt){
        //TODO: Implement Me 
        //var l = spl[1] +'_'+ spl[2] +'_'+ c;
+       if (txt === undefined)txt = '';
       var newchild = 
      '<div id="ts_'+ l
      +'" class="well container-fluid" ondrag="drag(event)" draggable="true">\
@@ -72,8 +73,8 @@ var UILoad = {
       +'" data-toggle="collapse" class="text-justify">'+cname+'</a>\
       <div id="'+ l +'" class="collapse" >\
          <label> description:</label>\
-         <textarea id="ta_'+ l
-      +'"style="width: 100%"></textarea>\
+         <textarea  id="ta_'+ l
+      +'"style="width: 100%" onblur="typ(this)">'+txt+'</textarea>\
          <button onclick="$(this).parent().parent().hide()">delete</button>\
       </div>\
       <button class="btn pull-right" \
@@ -109,7 +110,7 @@ var UILoad = {
        //TODO: Implement Me
       var q = app.qb.slct(["tid",'tname as nm','pos'],"taskbars","pid = '"+
                ID + "'");
-      var q0 = app.qb.slct(["cid",'cname as nm','tid'],"cards","pid = '"+
+      var q0 = app.qb.slct(["cid",'cname as nm','tid','cdesc'],"cards","pid = '"+
                ID + "'");
        //console.log(q);
        //console.log(q);

@@ -7,6 +7,7 @@
 var app  = {
       colNames:[],
       cardCount:0,
+      qt:220,
        cards: {},
        qb: Q_ueryBuild,
        app : function(){
@@ -34,9 +35,7 @@ var app  = {
                  console.log(obj.item(a).nm);
               $('#landing').append(UILoad.placeTaskBar(obj,0,0,4));
               $('#landing').append(UILoad.placeTaskBar(obj,0,1,4));
-           },220);
-           
-           
+           },app.qt);
         }
      },
 
@@ -50,7 +49,7 @@ var app  = {
    */
    createProj :function(name){
        //TODO: Implement Me 
-       var name = prompt("Project Name", 'please enter the project name');
+       name = prompt("Project Name", 'please enter the project name');
        return name;
    },
 
@@ -99,7 +98,7 @@ var app  = {
    */
     editProj  : function(id, col, value){
        //TODO: Implement Me 
-
+       
    },
 
 
@@ -111,7 +110,9 @@ var app  = {
    */
     editCard  : function(id, Col, Value){
        //TODO: Implement Me 
-
+      this.qb.transaction(this.qb.update('cards'
+               ,Col +" = '" + Value +"'" 
+               ,'cid', '"' + id+'"'));
    },
 
 
