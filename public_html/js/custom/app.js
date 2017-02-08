@@ -49,7 +49,7 @@ var app  = {
    */
    createProj :function(){
       //TODO: Implement Me 
-      $(".modal").show();
+      $(".modal").modal('show');
       var name;
       var c;
       var q = this.qb.slct('pid','proj',"pid = pid ORDER BY pid DESC LIMIT 1");
