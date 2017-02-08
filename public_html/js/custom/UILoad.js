@@ -99,11 +99,11 @@ var UILoad = {
      '<div id="pid_'+ l
      +'" class="well container-fluid" ondrag="drag(event)" onclick="projO(this)">\
       <a  data-target="#p'+ l
-      +'" data-toggle="collapse" class="text-justify">'+cname+'</a>\
+      +'" data-toggle="collapse" class="text-justify col-sm-9 label label-info">'+cname+'</a>\
       <div id="p'+ l +'" class="collapse" >\
          <label> description:</label>\
          <textarea  id="ta_'+ l
-      +'"style="width: 100%" onblur="ptyp(this)">'+txt+'</textarea>\
+      +'" style="width: 100%" onblur="ptyp(this)">'+txt+'</textarea>\
          <button onclick="$(this).parent().parent().hide()">delete</button>\
       </div>\
       </div>';
