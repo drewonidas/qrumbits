@@ -8,9 +8,6 @@ CREATE TABLE proj (
    PRIMARY KEY (pid)
 );
 
-
-
-
 CREATE TABLE taskbars (
    tid integer NOT NULL,
    tname varchar(20) NOT NULL,
@@ -18,9 +15,6 @@ CREATE TABLE taskbars (
    pos integer NOT NULL,
    PRIMARY KEY (tid)
 );
-
-
-
 
 CREATE TABLE cards (
    cid integer NOT NULL,
@@ -30,9 +24,6 @@ CREATE TABLE cards (
    assign integer NOT NULL,
    PRIMARY KEY (cid)
 );
-
-
-
 
 
 CREATE TABLE people (

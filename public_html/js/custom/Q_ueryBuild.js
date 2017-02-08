@@ -1,6 +1,7 @@
 /**
  * Generated On: 2017-1-17
  * Class: Q_ueryBuild
+ * insert into taskbars (tname, pid,pos) valueS ('todo',1,0)
  */
 
 var Q_ueryBuild = {
@@ -10,7 +11,9 @@ var Q_ueryBuild = {
    transaction: function (q) {
       this.db.transaction(function (tx) {
          tx.executeSql(q);
-      },function (er){console.log(er);})
+      }, function (er) {
+         console.log(er);
+      });
    }, /**
     * @param selection {} 
     * @param table {} 
@@ -22,9 +25,9 @@ var Q_ueryBuild = {
       var qs = "SELECT ";
       qs += this.arrayJustify(selection);
       qs += " FROM ";
-      qs += this.arrayJustify(table)
+      qs += this.arrayJustify(table);
       if (lim !== undefined) {
-         qs += " WHERE "
+         qs += " WHERE ";
          qs += lim;
       }
       return qs;
@@ -81,15 +84,15 @@ var Q_ueryBuild = {
    uemail VARCHAR(72) NOT NULL,\
    upassword VARCHAR(100),\
    PRIMARY KEY (uid)\
-);"//VARCHAR INTEGER CHAR DATE
-     var trye = this.transaction(tb0);
+);";//VARCHAR INTEGER CHAR DATE
+      this.transaction(tb0);
      //console.log(trye);
       this.transaction(tb1);
       this.transaction(tb2);
       this.transaction(tb3);
    },
    /**
-    * 
+    * @param {object} obj description
     * @return qs{null}
     */
    arrayJustify: function (obj) {
@@ -122,6 +125,6 @@ var Q_ueryBuild = {
       return qs;
 
    }
-}
+};
 
 
