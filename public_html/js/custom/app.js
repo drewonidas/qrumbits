@@ -13,10 +13,10 @@ var app  = {
        app : function(){
          //Constructor
          this.qb.init();
-         UILoad.pid = 1;
+         UILoad.pid = localStorage.getItem("pid") || 0;
          if(UILoad.pid >= '1'){
            app.read();
-        }else{
+         }else{
            console.log("proj land")
            var pr = {};
            this.qb.db.transaction(function (tx){
@@ -47,12 +47,28 @@ var app  = {
    * @param name {} 
    * @return {null}
    */
-   createProj :function(name){
-       //TODO: Implement Me 
-       name = prompt("Project Name", 'please enter the project name');
-       return name;
+   createProj :function(){
+      //TODO: Implement Me 
+      $(".modal").show();
+      var name;
+      var c;
+      var q = this.qb.slct('pid','proj',"pid = pid ORDER BY pid DESC LIMIT 1");
+      this.qb.db.transaction(function(tx){
+               tx.executeSql(q,[],function(tx,rs){
+                  c = rs.rows.item(0).pid + 1;
+               });
+            },function(err){console.log(err);});
+      setTimeout(function (){
+         if ((name = prompt("Project Name", 'please enter the project name'))){
+            var base = document.createElement("div");
+            $(base).appendTo('#tid_0_p1');
+            var crd = $(UILoad.projCard(c,name,'try'));
+            $(base).replaceWith(crd);
+            console.log(q,crd);
+         };
+      },app.qt);
+      return name;
    },
-
 
    /**
    * @param name {} 
@@ -75,15 +91,14 @@ var app  = {
       this.qb.transaction(this.qb.insert('cards'
       ,['cname','tid','cdesc','assign','pid']
       ,['"'+name+'"','"'+tid+'"','""','0',1]));
-
        var l = spl[1] +'_'+ spl[2] +'_'+ c;
       var newchild = UILoad.cardTemplate(l,name);
       $(parent).append(newchild);
       app.cards["ts_"+ l] = c;
 
-       console.log(this.qb.insert('cards'
-      ,['cname','tid','cdesc','assign','pid']
-      ,['"'+name+'"','"'+tid+'"','""','0',1]));
+//       console.log(this.qb.insert('cards'
+//      ,['cname','tid','cdesc','assign','pid']
+//      ,['"'+name+'"','"'+tid+'"','""','0',1]));
 //      app.qb.transaction(app.qb.update('cards'
 //      ,['cname','tid','cdesc','assign']
 //      ,['"'+name+'"','"'+tid+'"','"Nothing to show"','0'])); 

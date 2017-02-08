@@ -18,10 +18,10 @@ var UILoad = {
    */
    placeTaskBar : function(obj,pid,pos,size){
        //TODO: build 
-       var func = '';
-       if (size === undefined) size = 3;
-       if (pid === 0) func ="app.createProj()";else{func = 'cc(this)';}
-       var tsbr = '<div class="container-fluid col-sm-'+size+'  col-xs-offset-1 well " id="tid_'+
+      var func = '';
+      if (size === undefined) size = 3;
+      if (pid === 0) func ="app.createProj()";else{func = 'cc(this)';}
+      var tsbr = '<div class="container-fluid col-sm-'+size+'  col-xs-offset-1 well " id="tid_'+
                pid+'_'+obj.item(pos).tid+'" ondrop="drop(event)" ondragover="allowDrop(event)">\
             <div class="row" contenteditable="false" ondrop="preventDrop(event)" id="tt">\
               <h4 class="col-sm-6 text-center chead" >#'+obj.item(pos).nm+'</h4>\
@@ -59,7 +59,9 @@ var UILoad = {
    },
    
    /**
-   * @param ID {} 
+   * @param  {text} l special tag 
+   * @param {text} cname cards label
+   * @param {text} txt cards descriptions
    * @return {null}
    */
    cardTemplate : function(l,cname,txt){
@@ -82,7 +84,31 @@ var UILoad = {
       </div>';
       return newchild;
    },
-
+   
+   /**
+   * @param  {text} l special tag 
+   * @param {text} cname cards label
+   * @param {text} txt cards descriptions
+   * @return {null}
+   */
+   projCard : function(l,cname,txt){
+       //TODO: Implement Me 
+       //var l = spl[1] +'_'+ spl[2] +'_'+ c;
+       if (txt === undefined)txt = '';
+      var newchild = 
+     '<div id="pid_'+ l
+     +'" class="well container-fluid" ondrag="drag(event)" onclick="projO(this)">\
+      <a  data-target="#p'+ l
+      +'" data-toggle="collapse" class="text-justify">'+cname+'</a>\
+      <div id="p'+ l +'" class="collapse" >\
+         <label> description:</label>\
+         <textarea  id="ta_'+ l
+      +'"style="width: 100%" onblur="ptyp(this)">'+txt+'</textarea>\
+         <button onclick="$(this).parent().parent().hide()">delete</button>\
+      </div>\
+      </div>';
+      return newchild;
+   },
 
    /**
    * @param ID {} 
