@@ -14,7 +14,7 @@ var app  = {
          //Constructor
          this.qb.init();
          UILoad.pid = localStorage.getItem("pid") || 0;
-         if(UILoad.pid >= '1'){
+      if (UILoad.pid >= 1) {
            app.read();
          }else{
            console.log("proj land")
@@ -45,7 +45,6 @@ var app  = {
    * @documentation: Creates a Project Entry
    *    
    *
-   * @param name {} 
    * @return {null}
    */
    createProj :function(){
@@ -82,7 +81,7 @@ var app  = {
 
 
    /**
-   * @param name {} 
+   * @param  {}name 
    * @return {null}
    */
     createCard : function(name,spl,parent,c){
@@ -132,8 +131,9 @@ var app  = {
    },
    
    list:function(){
-      var q = app.qb.slct(['pid as c','pname as nm','pdesc as d'],'proj',
-      'author_id = 0 and status = "a" limit 20');
+      var q = app.qb.slct(['pid as c', 'pname as nm', 'pdesc as d'], 'proj',
+              'author_id = 0 and status = "a" limit 20');
+      //SELECT tname,proj.pid,pos from taskbars, proj, templates where taskbars.pid = templates.t_pid and templates.pid = proj.pid
       var lst = {};
       app.qb.db.transaction(
               function (tx){
@@ -153,7 +153,7 @@ var app  = {
                console.log(q,crd);
             }
          },
-      app.qt);
+              app.qt);
    },
 
    read  : function(){

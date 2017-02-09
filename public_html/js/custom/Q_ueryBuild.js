@@ -59,7 +59,8 @@ var Q_ueryBuild = {
    date_created date NOT NULL,\
    date_modified date NOT NULL,\
    status CHAR NOT NULL,\
-   author_id integer NOT NULL,\
+   author_id integer NOT NULL,\\n\
+   pDesc varchar(200)\
    PRIMARY KEY (pid)\
 );";
       var tb1 = "CREATE TABLE IF NOT EXISTS taskbars (\

@@ -11,9 +11,10 @@ var UILoad = {
    tsb:{},
    crds:{},
    /**
-   * @param id {int} 
-   * @param size{int} size of col 2 - 4
-   * @param  pid{int} 
+   * @param  {int} pid
+   * @param {int} size of col 2 - 4
+   * @param  {obj}  obj
+   * @param {int} pos description
    * @return {null}
    */
    placeTaskBar : function(obj,pid,pos,size){
@@ -27,7 +28,7 @@ var UILoad = {
               <h4 class="col-sm-6 text-center chead" >#'+obj.item(pos).nm+'</h4>\
               <a class="col-sm-2 pull-right btn well well-sm " onclick="'+func+'">+</a>\
             </div><!--/column header-->\
-         </div>'
+         </div>';
       return tsbr;
    },
 
@@ -134,8 +135,11 @@ var UILoad = {
    */
    getProject : function(ID){
        //TODO: Implement Me
-      var q = app.qb.slct(["tid",'tname as nm','pos'],"taskbars","pid = '"+
-               ID + "'");
+      var q = app.qb.slct(["tid", 'tname as nm', 'pos'], "taskbars, proj, templates", "proj.pid = '" +
+              ID + "' and taskbars.pid = templates.t_pid and templates.pid = proj.pid");
+      //SELECT tname,proj.pid,pos from taskbars, proj, templates
+      //where taskbars.pid = templates.t_pid and templates.pid = proj.pid
+
       var q0 = app.qb.slct(["cid",'cname as nm','tid','cdesc'],"cards","pid ='"+
                ID + "'");
        app.qb.db.transaction(function (tx){
