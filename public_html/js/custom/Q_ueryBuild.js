@@ -84,12 +84,16 @@ var Q_ueryBuild = {
    uemail VARCHAR(72) NOT NULL,\
    upassword VARCHAR(100),\
    PRIMARY KEY (uid)\
-);";//VARCHAR INTEGER CHAR DATE
+   );";//VARCHAR INTEGER CHAR DATE
+      var tb4 = "CREATE TABLE IF NOT EXISTS templates (\
+   tmid INTEGER PRIMARY KEY,\
+   pid INTEGER, \
+   t_pid INTEGER);";
       this.transaction(tb0);
-     //console.log(trye);
       this.transaction(tb1);
       this.transaction(tb2);
       this.transaction(tb3);
+      this.transaction(tb4);
    },
    /**
     * @param {object} obj description
