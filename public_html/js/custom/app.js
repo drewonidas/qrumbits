@@ -35,6 +35,7 @@ var app  = {
                  console.log(obj.item(a).nm);
               $('#landing').append(UILoad.placeTaskBar(obj,0,0,4));
               $('#landing').append(UILoad.placeTaskBar(obj,0,1,4));
+              app.list();
            },app.qt);
         }
      },
@@ -129,14 +130,34 @@ var app  = {
                ,Col +" = '" + Value +"'" 
                ,'cid', '"' + id+'"'));
    },
+   
+   list:function(){
+      var q = app.qb.slct(['pid as c','pname as nm','pdesc as d'],'proj',
+      'author_id = 0 and status = "a" limit 20');
+      var lst = {};
+      app.qb.db.transaction(
+              function (tx){
+                  tx.executeSql(q,[],
+                  function(tx,rs){
+                     lst = rs.rows; 
+                  });
+              },function (err){console.log(err);});
+      setTimeout(
+         function (){
+            console.log(lst);
+            for (var a = 0;a < lst.length;a++){
+               var base = document.createElement("div");
+               $(base).appendTo('#tid_0_p1');
+               var crd = $(UILoad.projCard(lst[a].c,lst[a].nm));
+               $(base).replaceWith(crd);
+               console.log(q,crd);
+            }
+         },
+      app.qt);
+   },
 
-
-   /**
-   * @param Projid {} 
-   * @return {null}
-   */
-    read  : function(Projid){
-       //TODO: Implement Me 
+   read  : function(){
+       //TODO: Implement Me
       UILoad.placeCards();
    },
 

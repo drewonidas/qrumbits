@@ -62,11 +62,13 @@
    </div><div class=" modal " id="mnu" style="margin-top: 4em">
          
          <div class="modal-content modal-dialog modal-sm form-group" >
-            <div class="modal-header"><button id="e" type="button" class="close" data-dismiss="modal">x</button></div><div class="form-group-sm">
+            <div class="modal-header"><button id="e" class="close"
+               data-dismiss="modal">x</button></div><div class="form-group-sm">
 <!--            <label class="modal-title form-control text-center text-capitalize">
                New Proj</label>-->
-            <button class="btn form-control well l">Default</button>
-            <button class="btn form-control">templates</button>
+            <button class="btn form-control" >Default</button>
+            <button class="btn form-control">Templates</button>
+            <button class="btn form-control">New</button>
             </div>
          </div>
       </div>
@@ -77,7 +79,7 @@
       <hr>
 
       <footer>
-        <p class="text-center">&copy; Q_rumBits  Q LINK 2017</p>
+        <p class="text-center"> Q_rumBits  Q LINK  &copy;2017</p>
       </footer>
     <!--</div>  /container         <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.js"></script>-->
     <!--<script src="../../../Downloads/jquery-3.1.1.js" type="text/javascript"></script>-->
@@ -102,15 +104,19 @@
          var qb = app.qb;
          var db = qb.db;
          var co;var res = "";
-         var qt = 220;//universal time
-         
-         function projO(ts){
+         var usr = 0;
+         function projSelected(ts){
             //alert('proj id='+($(ts).attr('id').split('_')[1] -1));
-            UILoad.pid = ($(ts).attr('id').split('_')[1] - 1);
+            UILoad.pid = ($(ts).attr('id').split('_')[1]);
             localStorage.setItem("pid",UILoad.pid);
             if ((UILoad.pid == 0)){$('#proj').hide();$('#landing').show();}
             else{$('#proj').show();$('#landing').hide();}
             app.app();
+         }
+         
+         function proj(){
+            //alert('proj id='+($(ts).attr('id').split('_')[1] -1));
+            $('#mnu').modal('show');
          }
          function cc(which){
             var c = 0;

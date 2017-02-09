@@ -20,7 +20,7 @@ var UILoad = {
        //TODO: build 
       var func = '';
       if (size === undefined) size = 3;
-      if (pid === 0) func ="app.createProj()";else{func = 'cc(this)';}
+      if (pid === 0) func ="proj()";else{func = 'cc(this)';}
       var tsbr = '<div class="container-fluid col-sm-'+size+'  col-xs-offset-1 well " id="tid_'+
                pid+'_'+obj.item(pos).tid+'" ondrop="drop(event)" ondragover="allowDrop(event)">\
             <div class="row" contenteditable="false" ondrop="preventDrop(event)" id="tt">\
@@ -97,7 +97,7 @@ var UILoad = {
        if (txt === undefined)txt = '';
       var newchild = 
      '<div id="pid_'+ l
-     +'" class="well container-fluid" ondrag="drag(event)" onclick="projO(this)">\
+     +'" class="well container-fluid" ondrag="drag(event)" ondblclick="projSelected(this)">\
       <a  data-target="#p'+ l
       +'" data-toggle="collapse" class="text-justify col-sm-9 label label-info">'+cname+'</a>\
       <div id="p'+ l +'" class="collapse" >\
@@ -136,10 +136,8 @@ var UILoad = {
        //TODO: Implement Me
       var q = app.qb.slct(["tid",'tname as nm','pos'],"taskbars","pid = '"+
                ID + "'");
-      var q0 = app.qb.slct(["cid",'cname as nm','tid','cdesc'],"cards","pid = '"+
+      var q0 = app.qb.slct(["cid",'cname as nm','tid','cdesc'],"cards","pid ='"+
                ID + "'");
-       //console.log(q);
-       //console.log(q);
        app.qb.db.transaction(function (tx){
          tx.executeSql(q,[],function (tx,rs){
              //console.log(rs);
