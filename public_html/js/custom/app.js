@@ -7,7 +7,8 @@
 var app  = {
       colNames:[],
       cardCount:0,
-      qt:220,
+      qt:420,
+      projtype:0,
        cards: {},
        qb: Q_ueryBuild,
        app : function(){
@@ -15,6 +16,7 @@ var app  = {
          this.qb.init();
          UILoad.pid = localStorage.getItem("pid") || 0;
       if (UILoad.pid >= 1) {
+         
            app.read();
          }else{
            console.log("proj land")
@@ -44,30 +46,44 @@ var app  = {
    /**
    * @documentation: Creates a Project Entry
    *    
-   *
+   *@param {string} name description
    * @return {null}
    */
-   createProj :function(){
+   createProj :function(name,usr,prty){
       //TODO: Implement Me 
-      $(".modal").modal('show');
-      var name;
-      var c;
+      $("#mnu").modal('hide');
+      var c = 0;
       var q = this.qb.slct('pid','proj',"pid = pid ORDER BY pid DESC LIMIT 1");
       this.qb.db.transaction(function(tx){
                tx.executeSql(q,[],function(tx,rs){
                   c = rs.rows.item(0).pid + 1;
                });
             },function(err){console.log(err);});
-      setTimeout(function (){
-         if ((name = prompt("Project Name", 'please enter the project name'))){
-            var base = document.createElement("div");
-            $(base).appendTo('#tid_0_p1');
-            var crd = $(UILoad.projCard(c,name,'try'));
-            $(base).replaceWith(crd);
-            console.log(q,crd);
-         };
+      var i = setInterval(function (){
+         if((c !== undefined || c !== 0)){
+            var ins = this.qb.insert("proj",
+            ['pid','pname','date_created','date_modified','status','author_id'],
+            [c,'"'+name+'"','date()','date()','"a"','"'+usr+'"']);
+            var ins0 = this.qb.insert("templates",
+            ['t_pid','pid'],
+            [prty,c]); 
+            app.qb.transaction(ins);
+            app.qb.transaction(ins0);
+            
+            UILoad.pid = c;
+            localStorage.setItem("pid",UILoad.pid);
+            if ((UILoad.pid == 0)){$('#proj').hide();$('#landing').show();}
+            else{$('#proj').show();$('#landing').hide();}
+            app.app();
+            app.cltime(i);console.log(ins0,ins);
+         }
+         
       },app.qt);
       return name;
+   },
+   cltime:function (ts){
+      clearInterval(ts);
+      this.projtype = 0;
    },
 
    /**
@@ -90,7 +106,7 @@ var app  = {
       tid = tid.split('_')[2];
       this.qb.transaction(this.qb.insert('cards'
       ,['cname','tid','cdesc','assign','pid']
-      ,['"'+name+'"','"'+tid+'"','""','0',1]));
+      ,['"'+name+'"','"'+tid+'"','""','0',spl[1]]));
        var l = spl[1] +'_'+ spl[2] +'_'+ c;
       var newchild = UILoad.cardTemplate(l,name);
       $(parent).append(newchild);
@@ -158,6 +174,8 @@ var app  = {
 
    read  : function(){
        //TODO: Implement Me
+       if ((UILoad.pid == 0)){$('#proj').hide();$('#landing').show();}
+            else{$('#proj').show();$('#landing').hide();}
       UILoad.placeCards();
    },
 

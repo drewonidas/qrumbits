@@ -66,7 +66,7 @@
                data-dismiss="modal">x</button></div><div class="form-group-sm">
 <!--            <label class="modal-title form-control text-center text-capitalize">
                New Proj</label>-->
-            <button class="btn form-control" >Default</button>
+            <button class="btn form-control" onclick="create()">Default</button>
             <button class="btn form-control">Templates</button>
             <button class="btn form-control">New</button>
             </div>
@@ -99,6 +99,7 @@
 //            e.src='//www.google-analytics.com/analytics.js';
 //            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
 //            ga('create','UA-XXXXX-X','auto');ga('send','pageview');
+         
          if (window.hasOwnProperty('openDatabase')){
          app.app();
          var qb = app.qb;
@@ -117,6 +118,13 @@
          function proj(){
             //alert('proj id='+($(ts).attr('id').split('_')[1] -1));
             $('#mnu').modal('show');
+         }
+         function create(){
+            var name;
+            if ((name = prompt("Project Name", "please enter Projects name"))){
+               app.prototype = 1;
+               app.createProj(name,usr,1);
+            }
          }
          function cc(which){
             var c = 0;

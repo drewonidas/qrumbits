@@ -12,7 +12,7 @@ var Q_ueryBuild = {
       this.db.transaction(function (tx) {
          tx.executeSql(q);
       }, function (er) {
-         console.log(er);
+         console.log(er,q);
       });
    }, /**
     * @param selection {} 
@@ -59,8 +59,8 @@ var Q_ueryBuild = {
    date_created date NOT NULL,\
    date_modified date NOT NULL,\
    status CHAR NOT NULL,\
-   author_id integer NOT NULL,\\n\
-   pDesc varchar(200)\
+   author_id integer NOT NULL,\
+   pDesc varchar(200),\
    PRIMARY KEY (pid)\
 );";
       var tb1 = "CREATE TABLE IF NOT EXISTS taskbars (\
