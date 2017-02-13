@@ -7,7 +7,10 @@
 var app  = {
       colNames:[],
       cardCount:0,
-      qt:420,
+      /**
+       * @description query time
+       * */
+      qt:220,//220 optimum
       projtype:0,
        cards: {},
        qb: Q_ueryBuild,
@@ -60,13 +63,14 @@ var app  = {
                });
             },function(err){console.log(err);});
       var i = setInterval(function (){
+         if (c == 0|| c == undefined)
+            c = 1;
          if((c !== undefined || c !== 0)){
             var ins = this.qb.insert("proj",
             ['pid','pname','date_created','date_modified','status','author_id'],
             [c,'"'+name+'"','date()','date()','"a"','"'+usr+'"']);
             var ins0 = this.qb.insert("templates",
-            ['t_pid','pid'],
-            [prty,c]); 
+            ['t_pid','pid'],[prty,c]);
             app.qb.transaction(ins);
             app.qb.transaction(ins0);
             
@@ -74,7 +78,7 @@ var app  = {
             localStorage.setItem("pid",UILoad.pid);
             if ((UILoad.pid == 0)){$('#proj').hide();$('#landing').show();}
             else{$('#proj').show();$('#landing').hide();}
-            app.app();
+            //app.app();
             app.cltime(i);console.log(ins0,ins);
          }
          
@@ -87,12 +91,39 @@ var app  = {
    },
 
    /**
-   * @param name {} 
-   * @return {null}
+    * @param {int} pid description
+    * @param {int} tid description
+    * @param {text} name
+    * @param {int} pos description
+    * @return {null}
    */
-    createTaskBar  : function(name){
+    createTaskBar  : function(tid,name,pos,set){
       //TODO: Implement Me 
-      
+      var c = 0;
+      var p = 0;
+      var q = this.qb.slct('tid','taskbars',"tid = tid ORDER BY tid DESC LIMIT 1");
+      this.qb.db.transaction(function(tx){
+               tx.executeSql(q,[],function(tx,rs){
+                  c = rs.rows.item(0).tid;
+               });
+            },function(err){console.log(err);});
+      var i = setInterval(function (){
+         if (c == 0|| c == undefined)
+            c = tid;
+         if (set === 1)
+            p = set;
+         else
+            p = UILoad.pid;
+         if((c !== undefined || c !== 0)){
+            var ins = this.qb.insert("taskbars",
+            ['tid','pid','tname','pos'],
+            [c,p,'"'+name+'"',pos]);
+            app.qb.transaction(ins);
+            app.cltime(i);console.log(ins);
+         }
+         
+      },app.qt);
+      return name;
    },
 
 
@@ -188,6 +219,9 @@ var app  = {
    */
     delete  : function(type, id){
        //TODO: Implement Me 
-
+      qb.transaction("drop table proj");
+      qb.transaction("drop table taskbars");
+      qb.transaction("drop table templates");
+      localStorage.setItem("pid",0);
    }
 }
