@@ -81,7 +81,6 @@ var app  = {
             //app.app();
             app.cltime(i);console.log(ins0,ins);
          }
-         
       },app.qt);
       return name;
    },
