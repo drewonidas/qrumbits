@@ -40,11 +40,19 @@ class DBConnect
   public function Connect()
   {
     // TODO: implement here
-    if (file_exists("ready.x")){
-      $this->URL = "mysql:host=localhost";
-      $this->protocol = new PDO($this->URL, "root","password");
-      $this->protocol->exec("");
-      
+    try{
+      if (!file_exists("ready.q")){
+        $this->URL = "mysql:host=localhost";
+        $this->protocol = new PDO($this->URL, "root","password");
+        $sql = file_get_contents('php/mysql.sql');
+        $this->protocol->exec($sql);
+        $f = fopen("ready.q", 'w');
+        fwrite($f, $sql) or die("QERR Permissions");
+        fclose($f);
+      }
+    
+    }  catch (Exception $ex){
+       echo json_decode([$ex]);
     }
   }
 
