@@ -100,16 +100,6 @@ class app
   }
 
   /**
-   * @param void $id
-   * @param void $Col
-   * @param void $Value
-   */
-  public function editCard($id, $Col, $Value)
-  {
-    // TODO: implement here
-  }
-
-  /**
    * @param void $Projid
    */
   public function read($Projid)
