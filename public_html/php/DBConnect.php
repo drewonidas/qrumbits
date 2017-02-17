@@ -12,7 +12,7 @@ class DBConnect
   public $URL;
 
   /**
-   * @var void
+   * @var PDO Description
    */
   public $protocol;
 
@@ -31,6 +31,7 @@ class DBConnect
    */
   public function __construct()
   {
+    $this->connect();
   }
 
 
@@ -39,7 +40,6 @@ class DBConnect
    */
   public function Connect()
   {
-    // TODO: implement here
     try{
       if (!file_exists("ready.q")){
         $this->URL = "mysql:host=localhost";
@@ -51,6 +51,8 @@ class DBConnect
         fwrite($f, $sql) or die("QERR Permissions");
         fclose($f);
       }
+      $this->protocol = new PDO($this->URL, base64_decode("cm9vdAo="),  
+                base64_decode( "cGFzc3dvcmQK"),"qrumb");
     
     }  catch (Exception $ex){
        echo json_decode([$ex]);
@@ -58,11 +60,12 @@ class DBConnect
   }
 
   /**
-   *
+   * 
    */
   public function TransAct()
   {
-    // TODO: implement here
+    $this->token = $this->protocol->prepare($this->Key);
+    $this->protocol->exe($this->token);
   }
 
   /**
@@ -70,6 +73,6 @@ class DBConnect
    */
   public function Sync()
   {
-    // TODO: implement here
+    $this->Transact();
   }
 }
