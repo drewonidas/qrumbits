@@ -43,7 +43,8 @@ class DBConnect
     try{
       if (!file_exists("ready.q")){
         $this->URL = "mysql:host=localhost";
-        $this->protocol = new PDO($this->URL, "root","password");
+        $this->protocol = new PDO($this->URL, base64_decode("cm9vdAo="),  
+                base64_decode( "cGFzc3dvcmQK"));
         $sql = file_get_contents('php/mysql.sql');
         $this->protocol->exec($sql);
         $f = fopen("ready.q", 'w');
