@@ -132,21 +132,33 @@
 //            r.parentNode.insertBefore(e,r)}(window,document,'script','ga'));
 //            ga('create','UA-XXXXX-X','auto');ga('send','pageview');
          var lg =  false;
+         var qb = app.qb;
+         var db = qb.db;
+         var co;
+         var res = "";
+         var usr = 0;
+         var c = 0;
          function sign_in(){
+            if (0){
             $('[data-toggle="tooltip"]').tooltip(); 
             var t = $('#signpass');
             t.prop("title","Cant be Empty");
-            t.tooltip("show");
+            t.tooltip("show");}else{
+            lg =true;
+            $("#Login").remove();
+            //$().
+            $("#landing").removeClass('hidden');
+            $("#landing").show();
+            app.app();
          }
-         if (window.hasOwnProperty('openDatabase')&&lg){
-         app.app();
-         var qb = app.qb;
-         var db = qb.db;
-         var co;var res = "";
-         var usr = 0;
-         var c = 0;
-         var qry = qb.slct('count(*) as c','taskbars');
+         }
+         if (window.hasOwnProperty('openDatabase')){
+         //app.app();
+         
+         
+         
          db.transaction(function(tx){
+            var qry = qb.slct('count(*) as c','taskbars');
                tx.executeSql(qry,[],function(tx,rs){
                   if(rs.rows.length > 0)
                   c = rs.rows.item(0).c;
