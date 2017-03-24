@@ -138,20 +138,30 @@
          var res = "";
          var usr = 0;
          var c = 0;
+         var pid = localStorage.getItem('pid');
+         if (pid == 0){
          function sign_in(){
-            if (0){
-            $('[data-toggle="tooltip"]').tooltip(); 
-            var t = $('#signpass');
-            t.prop("title","Cant be Empty");
-            t.tooltip("show");}else{
-            lg =true;
-            $("#Login").remove();
-            //$().
-            $("#landing").removeClass('hidden');
-            $("#landing").show();
-            app.app();
-         }
-         }
+            
+            
+            if ($("#signemail").val().trim() == ""){
+               $('[data-toggle="tooltip"]').tooltip(); 
+               var t = $('#signpass');alert($("input[placeholder='Email']").text());
+               t.prop("title","Cant be Empty");
+               t.tooltip("show");
+            }else{
+               lg =true;
+               $("#Login").remove();
+               //$().
+               $("#landing").removeClass('hidden');
+               app.app();
+            }
+         }}
+      else{
+               lg =true;
+               $("#Login").remove();
+               $("#landing").removeClass('hidden');
+               app.app();
+            }
          if (window.hasOwnProperty('openDatabase')){
          //app.app();
          
