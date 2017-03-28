@@ -12,7 +12,7 @@ var Q_ueryBuild = {
       this.db.transaction(function (tx) {
          tx.executeSql(q);
       }, function (er) {
-         console.log(er,q);
+         console.log(er, q);
       });
    }, /**
     * @param selection {} 
@@ -43,9 +43,9 @@ var Q_ueryBuild = {
     */
    update: function (table, colepar, id, val) {
       //TODO: Implement Me 
-      var qs = "UPDATE "+ table +' SET ';
+      var qs = "UPDATE " + table + ' SET ';
       qs += this.arrayJustify(colepar);
-      qs += " WHERE "+ id + " = " + val;
+      qs += " WHERE " + id + " = " + val;
       return qs;
    },
    /**
@@ -61,15 +61,13 @@ var Q_ueryBuild = {
    status CHAR NOT NULL,\
    author_id integer NOT NULL,\
    pDesc varchar(200),\
-   PRIMARY KEY (pid)\
-);";
+   PRIMARY KEY (pid));";
       var tb1 = "CREATE TABLE IF NOT EXISTS taskbars (\
    tid INTEGER NOT NULL ,\
    tname VARCHAR(20) NOT NULL,\
    pid INTEGER NOT NULL,\
    pos INTEGER NOT NULL,\
-   PRIMARY KEY (tid)\
-);";
+   PRIMARY KEY (tid));";
       var tb2 = "CREATE TABLE IF NOT EXISTS cards (\
    cid INTEGER NOT NULL ,\
    cname VARCHAR(20) NOT NULL,\
@@ -77,8 +75,7 @@ var Q_ueryBuild = {
    cdesc VARCHAR(330),\
    pid INTEGER,\
    assign INTEGER,\
-   PRIMARY KEY (cid)\
-);";
+   PRIMARY KEY (cid));";
       var tb3 = "CREATE TABLE IF NOT EXISTS people (\
    uid INTEGER NOT NULL ,\
    uname VARCHAR(20) NOT NULL,\
@@ -105,7 +102,7 @@ var Q_ueryBuild = {
       var qs = '';
       if (!obj.hasOwnProperty("substr")) {
          qs += obj;
-      } else /*if (obj.hasOwnProperty("length")) */{
+      } else /*if (obj.hasOwnProperty("length")) */ {
          if (obj[0] !== undefined)
             qs += obj[0];
          for (var a = 1; a < obj.length; a++) {
@@ -123,7 +120,7 @@ var Q_ueryBuild = {
    insert: function (tble, cols, vals) {
       //TODO: Implement Me 
       var qs = "INSERT INTO ";
-      qs += tble +"(";
+      qs += tble + "(";
       qs += this.arrayJustify(cols);
       qs += ") VALUES (";
       qs += this.arrayJustify(vals) + ")";
