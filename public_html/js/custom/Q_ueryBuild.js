@@ -53,6 +53,7 @@ var Q_ueryBuild = {
     */
    init: function () {
       //TODO: Implement Me
+      console.log("dbinit");
       var tb0 = "CREATE TABLE IF NOT EXISTS proj (\
    pid INTEGER NOT NULL ,\
    pname varchar(30) NOT NULL,\
@@ -92,6 +93,7 @@ var Q_ueryBuild = {
       this.transaction(tb2);
       this.transaction(tb3);
       this.transaction(tb4);
+      return 0;
    },
    /**
     * @param {object} obj description

@@ -92,7 +92,6 @@ if (isset($_SESSION['state']) ) {
       $qb = new Q_ueryBuild();
       $uid = $app->last_in($qb->db);$qb = new Q_ueryBuild();
       //$_SESSION['typ'] = get_class($uid);
-      echo json_encode($uid);
       $qry=$qb->insert("Qrumb.People", "userid,useremail,username,userpassword,role",
               ":uid,:uemail,:uname,:upass,:role");
       $st = $qb->transaction($qry);

@@ -15,42 +15,44 @@ var app = {
   lst: {},
   cards: {},
   qb: Q_ueryBuild,
-  q:"",
+  q: "",
   app: function () {
     //Constructor
-    this.qb.init();
+    console.log("appinit");
+    c = localStorage.c ||this.qb.init();
+    
     UILoad.pid = localStorage.getItem("pid");
+    console.log(localStorage);
     if (UILoad.pid >= 1) {
 
       app.read();
     } else {
-      console.log("proj land")
+      console.log("proj land");
       var pr = {};
       this.qb.db.transaction(function (tx) {
-        tx.executeSql(qb.slct(['pid as tip', 'pid', 'pname as nm'], 'proj')
+        tx.executeSql(qb.slct(['pid as tip', 'pid', 'pname as nm'], 'proj',
+                'author_id = ' + localStorage.usr)
                 , [], function (tx, rs) {
           pr = rs.rows;
+          var obj = {
+            item: function (i) {
+              if (i === 0)
+                return{tid: 'p0', nm: 'Active Projects'};
+              return{tid: 'p1', nm: 'My Projects'};
+            }
+          };
+          //console.log(obj.item(0).nm);
+//        for (var a = 0; a <= obj.length; a++)
+//          console.log(obj.item(a).nm);
+          if (UILoad.pid >= -111) {
+            $('#landing').append(UILoad.placeTaskBar(obj, 0, 0, 4));
+            $('#landing').append(UILoad.placeTaskBar(obj, 0, 1, 4));
+            app.list();
+          }
         });
       }, function (er) {
         console.log(er);
       });
-      setTimeout(function () {
-        var obj = {
-          item: function (i) {
-            if (i === 0)
-              return{tid: 'p0', nm: 'Active Projects'};
-            return{tid: 'p1', nm: 'My Projects'};
-          }
-        };
-        //console.log(obj.item(0).nm);
-        for (var a = 0; a <= obj.length; a++)
-          console.log(obj.item(a).nm);
-        if (UILoad.pid !== -100) {
-          $('#landing').append(UILoad.placeTaskBar(obj, 0, 0, 4));
-          $('#landing').append(UILoad.placeTaskBar(obj, 0, 1, 4));
-          app.list();
-        }
-      }, app.qt);
     }
   },
   /**
@@ -155,7 +157,7 @@ var app = {
     var l = spl[1] + '_' + spl[2] + '_' + c;
     var newchild = UILoad.cardTemplate(l, name);
     $(parent).append(newchild);
-    console.log("ceateC",parent);
+    console.log("ceateC", parent);
     app.cards["ts_" + l] = c;
 
 //       console.log(this.qb.insert('cards'
@@ -187,52 +189,52 @@ var app = {
             , Col + " = '" + Value + "'"
             , 'cid', '"' + id + '"'));
   },
-  list:function () {
+  list: function () {
     var q = app.qb.slct(['pid as c', 'pname as nm', 'pdesc as d'], 'proj',
-            'author_id = '+usr+' and status = "a" limit 20');
-            app.q = q;
+            'author_id = ' + usr + ' and status = "a" limit 20');
+    app.q = q;
+    setTimeout(function () { console.log("list bgan");
     //SELECT tname,proj.pid,pos from taskbars, proj, templates where taskbars.pid = templates.t_pid and templates.pid = proj.pid
-    app.qb.db.transaction(
-            function (tx) {
-              tx.executeSql(q, [],
-                      function (tx, rs) {
-                        app.lst = rs.rows;
-                        console.log("test",rs.rows);
-                      });
-            }, function (err) {
-      console.log(err,"large Error");
-    });
-    
-                        console.log("text");
-    var i = setTimeout(function (){
-      console.log("started");
+    app.qb.db.transaction(function (tx) {
+      tx.executeSql(q, [], function (tx, rs) {
+        app.lst = rs.rows;
+        console.log("started");
       if (app.lst === undefined) {
         console.log("nothing found");
-      }else{for (var a = 0; a < app.lst.length; a++) {
+      } else {
+        console.log("test", rs.rows.length);
+        for (var a = 0; a < app.lst.length; a++) {
           var base = document.createElement("div");
+          console.log($("#tid_0_p1"));
           $(base).appendTo('#tid_0_p1');
           var crd = UILoad.projCard(app.lst[a].c, app.lst[a].nm);
           $(base).replaceWith(crd);
-          console.log(q, crd, "list");
-          clearTimeout(i);
+          //console.log(q, crd, "list");
+          //clearTimeout(i);
         }
       }
-        
-    },app.qt + 10);
+      });
+    }, function (err) {
+      console.log(err, "large Error");
+    });
+    
+      
+
+    }, app.qt);
   },
-          read: function () {
-            //TODO: Implement Me
-            if ((UILoad.pid == 0)) {
-              $('#proj').hide();
-              $('#landing').show();
-              console.log("land view");
-            } else {
-              $('#proj').show();
-              $('#landing').hide();
-              console.log("proj view");
-            }
-            UILoad.placeCards();
-          },
+  read: function () {
+    //TODO: Implement Me
+    if ((UILoad.pid == 0)) {
+      $('#proj').hide();
+      $('#landing').show();
+      console.log("land view");
+    } else {
+      $('#proj').show();
+      $('#landing').hide();
+      console.log("proj view");
+    }
+    UILoad.placeCards();
+  },
   /**
    * @param type {} 
    * @param id {} 
