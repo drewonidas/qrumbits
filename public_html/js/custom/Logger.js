@@ -3,26 +3,20 @@
 * Class: Logger
 */
 
-function Logger(){
+var Logger = {
     //Constructor
 
-    this.type = null;
-    this.message = null;
-    this.dateime = null;
+    type: null,
+    message: null,
+    datetime: null,
+    priority:null,
+    /**
+     * @param type {}
+     * @param msg {}
+     * @return {null}
+     */
+    log: function(type, msg){
+        //TODO: Implement Me
 
+    }
 }
-
-
-/**
-* @param type {} 
-* @param msg {} 
-* @return {null}
-*/
-Logger.prototype.log = function(type, msg){
-    //TODO: Implement Me 
-
-};
-
-
-
-module.exports = {Logger:Logger};

@@ -15,9 +15,9 @@ var Q_ueryBuild = {
          console.log(er, q);
       });
    }, /**
-    * @param selection {} 
-    * @param table {} 
-    * @param lim {} 
+    * @param selection {}
+    * @param table {}
+    * @param lim {}
     * @return qs{} query string
     */
    slct: function (selection, table, lim) {
@@ -35,14 +35,14 @@ var Q_ueryBuild = {
    },
    /**
     * @param table {} UPDATE 'table
-    * @param colepar {} SET 'col = 'par 
-    *  
+    * @param colepar {} SET 'col = 'par
+    *
     * @param id {} where 'id
     * @param val {}  = 'val
-    * @return qs 
+    * @return qs
     */
    update: function (table, colepar, id, val) {
-      //TODO: Implement Me 
+      //TODO: Implement Me
       var qs = "UPDATE " + table + ' SET ';
       qs += this.arrayJustify(colepar);
       qs += " WHERE " + id + " = " + val;
@@ -52,7 +52,7 @@ var Q_ueryBuild = {
     * @return qs{null}
     */
    init: function () {
-      //TODO: Implement Me 
+      //TODO: Implement Me
       var tb0 = "CREATE TABLE IF NOT EXISTS proj (\
    pid INTEGER NOT NULL ,\
    pname varchar(30) NOT NULL,\
@@ -98,7 +98,7 @@ var Q_ueryBuild = {
     * @return qs{null}
     */
    arrayJustify: function (obj) {
-      //TODO: Implement Me 
+      //TODO: Implement Me
       var qs = '';
       if (!obj.hasOwnProperty("substr")) {
          qs += obj;
@@ -112,13 +112,13 @@ var Q_ueryBuild = {
       return qs;
    },
    /**
-    * @param tble {} 
-    * @param cols {} 
-    * @param vals {} 
+    * @param tble {}
+    * @param cols {}
+    * @param vals {}
     * @return qs{null}
     */
    insert: function (tble, cols, vals) {
-      //TODO: Implement Me 
+      //TODO: Implement Me
       var qs = "INSERT INTO ";
       qs += tble + "(";
       qs += this.arrayJustify(cols);

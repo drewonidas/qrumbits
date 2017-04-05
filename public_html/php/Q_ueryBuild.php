@@ -1,6 +1,5 @@
 <?php
 
-
 /**
  * @author Timothy Tavonga Mugadza
  */
@@ -8,74 +7,129 @@ class Q_ueryBuild
 {
   /**
    *
-   */
-  public function __construct()
-  {
-  }
-
-  /**
-   * @var void
+   *//**
+   * @var PDO connect
    */
   public $db;
+  private $dsn0;
+  private $dsn1;
+  private $user;
+  private $pwd;
 
+  public function __construct()
+  {
+    try {
+      $this->init();
+    } catch (Exception $e) {
+      $this->db = null;
+      echo json_encode([$e,$e->getTraceAsString()]);
+      //error_log($e);
+    }
+  }
+
+  public function setdsn($con = 'mysql', $url = 'localhost') {
+    $this->user = "cm9vdA=="; //base64 obfuscicated
+    $this->pwd = "cm9vdDEyMzQ=";
+    $this->dsn0 = "$con:host=$url;";
+    $this->dsn1 = $this->dsn0 . 'name=Qrumb;';
+  }
 
   /**
    * @param void $selection
    * @param void $table
    * @param void $what
-   * @param void $is
-   * @param void $Limit
    * @return string
    */
-  public function slct($selection, $table, $what, $is, $Limit)
-  {
+  public static function slct($selection, $table, $what) {
     // TODO: implement here
-    return "";
+    $str = "SELECT ";
+    $str .= Q_ueryBuild::arrayJustify($selection) . " FROM " . $table;
+    if ($what != null)
+      $str .= " WHERE $what";
+    return $str;
   }
 
   /**
-   * @param void $table
-   * @param void $col
-   * @param void $param
-   * @param void $id
-   * @param void $val
+   * @param void $table string
+   * @param void $what string
+   * @param void $id string
    */
-  public function update($table, $col, $param, $id, $val)
-  {
+  public static function update($table, $what, $id) {
     // TODO: implement here
+    $str = "UPDATE $table SET ";
+    $str .= "$what WHERE $id";
+    return $str;
   }
 
   /**
-   *
+   * support function for constructor
+   * loads db and initiates 
    */
-  public function init()
-  {
+  public function init() {
     // TODO: implement here
+    $this->setdsn();
+    if (!file_exists("ready.x")) {
+      $this->db = new PDO($this->dsn0, base64_decode($this->user), base64_decode($this->pwd));
+      $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+      $sql = file_get_contents('rerd.sql');
+      $this->db->exec($sql);
+      $fil = fopen("ready.x", 'w');
+      fwrite($fil, $this->db->errorcode()) or die('{error:"bad permisions"}');
+      fclose($fil);
+    }
+    $this->db = new PDO($this->dsn1, base64_decode($this->user), base64_decode($this->pwd));
   }
 
   /**
-   * @param void $tble
-   * @param void $cols
-   * @param void $vals
+   * @param void $tble string
+   * @param void $cols not array...
+   * @param void $vals can be array or string
    */
-  public function insert($tble, $cols, $vals)
-  {
+  public static function insert($tble, $cols, $vals) {
     // TODO: implement here
+    $str = "INSERT INTO ";
+    $str .= $tble . " (";
+    $str .= Q_ueryBuild::arrayJustify($cols) . " ) VALUES ( ";
+    $str .= Q_ueryBuild::arrayJustify($vals) . ");";
+    return $str;
   }
 
   /**
-   * @param void $obj
+   * @param void $obj depricate
    */
-  public function arrayJustify($obj)
-  {
+  public static function arrayJustify($obj) {
     // TODO: implement here
+    $res = "";
+    if (is_array($obj)) {
+      $res = "'{$obj[0]}'";
+      $res .= $this->Justify($obj);
+    } else {
+      $res = $obj;
+    }
+    return $res;
   }
 
   /**
-   *
+   * support function to arrayJustify
+   * @param void $obj depricate
    */
-  public function transaction()
-  {
+  public static function Justify($obj) {
     // TODO: implement here
+    $res = "";
+    $len = sizeof($obj);
+    if ($obj[1] !== NULL) {
+      for ($a = 1; $a < $len; $a++) {
+        $res .= ",'{$obj[$a]}'";
+      }
+    }
+    return "$res";
+  }
+
+  /**
+   *@var void  $qry Query string
+   */
+  public function transaction($qry) {
+    // TODO: implement here
+    return $this->db->prepare($qry);
   }
 }
