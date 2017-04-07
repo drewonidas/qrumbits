@@ -195,14 +195,21 @@
               } else if (response.userstatus === -1) {
                 rg(email1);
               } else {
-                message("Wrong Password", $("#signpass"));
-              }
+                
+                if (localStorage.count === undefined ||
+                  parseInt(localStorage.getItem("count")) < 3){
+                  message('invalid password', $('#signpass'));
+                  localStorage.setItem("count",parseInt(localStorage.getItem("count")) + 1 || 0);
+                }
+                else
+                  message('email sent to reset password', $('#signpass'));
+                }
             }
             , 'JSON');//AJAX post (JQUERY Function)
           } else if (!tst.test(email1)) {
             message('invalid email', $('#signemail'));
           } else {
-            message('invalid password', $('#signpass'));
+            
           }
         }
         function verify() {//password test
@@ -302,10 +309,10 @@
           }, function (err) {
             console.log(err);
           });
-          setTimeout(function () {
-            //console.log(c);
-            
-          }, app.qt);
+//          setTimeout(function () {
+//            //console.log(c);
+//            
+//          }, app.qt);
 
           $.post("php/get_data.php",
                   {1: '1'},
@@ -330,11 +337,8 @@
                   }
           , "JSON");
           
-          //setTimeout(function () {
-
-          
-          // },app.qt);
-        });
+          //setTimeout(function () {          // },app.qt);
+        });//setup
 
 
         function projSelected(ts) {
