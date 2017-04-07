@@ -35,10 +35,6 @@ if (isset($_SESSION['state'])) {
                   . "(?=.*[!-\/|:-@|\[-\]|\{-~])/"
                   , filter_input(INPUT_POST, 'password'))
                   && $_SESSION['state'] == 1) {
-    //verify its correct format
-    //$line = 0;
-    //$res = new ArrayObject();
-    //$_SESSION['email'] = "1212";
     try {
       $st = $qb->transaction("select userpassword as d, userid as c from  "
       . "Qrumb.People where useremail = :eml");
@@ -56,15 +52,12 @@ if (isset($_SESSION['state'])) {
           
         } else{$_SESSION["state"] = 1;}
       } else {
-        //$res = array("userid" => -1);
-        //echo json_encode($res);
         $_SESSION['hap'] = $st->errorInfo() . $st->queryString;
       }
     } catch (Exception $exc) {
       $_SESSION['error'] = $exc->getTraceAsString();
     }
   } else {
-    //
     $_SESSION['error'] = "passworderror";
   }
 }
@@ -82,9 +75,6 @@ if (isset($_SESSION['state']) ) {
                   preg_match("/[m|t]/", 
                   filter_input(INPUT_POST, 'role')) && $_SESSION['state'] == 0
                   ) {
-    //verify its correct format
-    //$line = 0;echo '{error:1}';
-    //$res = new ArrayObject();
     $email = filter_input(INPUT_POST, 'email');
     $role = filter_input(INPUT_POST, 'role');
     $usrname = filter_input(INPUT_POST, 'username');

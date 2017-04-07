@@ -19,7 +19,7 @@ var app = {
   app: function () {
     //Constructor
     console.log("appinit");
-    c = localStorage.c ||this.qb.init();
+    c = localStorage.getItem('c') ||this.qb.sinit();
     
     UILoad.pid = localStorage.getItem("pid");
     console.log(localStorage);
@@ -64,28 +64,33 @@ var app = {
   createProj: function (name, usr, prty) {
     //TODO: Implement Me 
     $("#mnu").modal('hide');
-    var c = 0;
+    var p = 0;
     var q = this.qb.slct('pid', 'proj', "pid = pid ORDER BY pid DESC LIMIT 1");
-    this.qb.db.transaction(function (tx) {
-      tx.executeSql(q, [], function (tx, rs) {
-        c = rs.rows.item(0).pid + 1;
+    try{
+      this.qb.db.transaction(function (tx) {
+        tx.executeSql(q, [], function (tx, rs) {
+          p = rs.rows.item(0).pid + 1 || 1;
+        });
+      }, function (err) {
+        console.log(err);
       });
-    }, function (err) {
-      console.log(err);
-    });
+    }catch (ex){
+      console.log(ex);
+      pid0();
+    }
     var i = setInterval(function () {
-      if (c == 0 || c == undefined)
-        c = 1;
-      if ((c !== undefined || c !== 0)) {
+      if (p == 0 || p == undefined)
+        p = 1;
+      if ((p !== undefined || p !== 0)) {
         var ins = this.qb.insert("proj",
                 ['pid', 'pname', 'date_created', 'date_modified', 'status', 'author_id'],
-                [c, '"' + name + '"', 'date()', 'date()', '"a"', '"' + usr + '"']);
+                [p, '"' + name + '"', 'date()', 'date()', '"a"', '"' + usr + '"']);
         var ins0 = this.qb.insert("templates",
-                ['t_pid', 'pid'], [prty, c]);
+                ['t_pid', 'pid'], [prty, p]);
         app.qb.transaction(ins);
         app.qb.transaction(ins0);
 
-        UILoad.pid = c;
+        UILoad.pid = p;
         localStorage.setItem("pid", UILoad.pid);
         if ((UILoad.pid == 0)) {
           $('#proj').hide();

@@ -147,8 +147,8 @@
       var db = qb.db;
       var co;
       var res = "";
-      var usr = localStorage.usr || 0;
-      var c = localStorage.c || 0;
+      var usr = localStorage.getItem('usr') || 0;
+      var c = localStorage.getItem('c') || 0;
       var trs = [0, 0, 0];
       $('[data-toggle="tooltip"]').tooltip();
       UILoad.pid = localStorage.getItem('pid') || -100;
@@ -199,7 +199,7 @@
               }
             }
             , 'JSON');//AJAX post (JQUERY Function)
-          } else if (email1.length < 5) {
+          } else if (!tst.test(email1)) {
             message('invalid email', $('#signemail'));
           } else {
             message('invalid password', $('#signpass'));
@@ -276,6 +276,36 @@
 
         }
         $(document).ready(function () {
+          qb.init();
+          db.transaction(function (tx) {
+            var qry = qb.slct('count(*) as c', 'taskbars');
+            tx.executeSql(qry, [], function (tx, rs) {
+              if (rs.rows.length > 0)
+                c = rs.rows.item(0).c;
+              localStorage.setItem('c', c);
+              if (c == 0 || c == undefined) {
+                db.transaction(function (tx) {
+                  tx.executeSql(qb.insert("taskbars",
+                          ['tid', 'pid', 'tname', 'pos'],
+                          [1, 1, '"' + 'todo' + '"', 0]));
+                  tx.executeSql(qb.insert("taskbars",
+                          ['tid', 'pid', 'tname', 'pos'],
+                          [2, 1, '"' + 'in-progress' + '"', 1]));
+                  tx.executeSql(qb.insert("taskbars",
+                          ['tid', 'pid', 'tname', 'pos'],
+                          [3, 1, '"' + 'done' + '"', 2]));
+                }, function (err) {
+                  console.log(err);
+                });
+              }
+            });
+          }, function (err) {
+            console.log(err);
+          });
+          setTimeout(function () {
+            //console.log(c);
+            
+          }, app.qt);
 
           $.post("php/get_data.php",
                   {1: '1'},
@@ -299,37 +329,10 @@
 
                   }
           , "JSON");
-          db.transaction(function (tx) {
-            var qry = qb.slct('count(*) as c', 'taskbars');
-            tx.executeSql(qry, [], function (tx, rs) {
-              if (rs.rows.length > 0)
-                c = rs.rows.item(0).c;
-
-            });
-          }, function (err) {
-            console.log(err);
-          });
+          
           //setTimeout(function () {
 
-          setTimeout(function () {
-            //console.log(c);
-            localStorage.setItem('c', c);
-            if (c === 0) {
-              db.transaction(function (tx) {
-                tx.executeSql(qb.insert("taskbars",
-                        ['tid', 'pid', 'tname', 'pos'],
-                        [1, 1, '"' + 'todo' + '"', 0]));
-                tx.executeSql(qb.insert("taskbars",
-                        ['tid', 'pid', 'tname', 'pos'],
-                        [2, 1, '"' + 'in-progress' + '"', 1]));
-                tx.executeSql(qb.insert("taskbars",
-                        ['tid', 'pid', 'tname', 'pos'],
-                        [3, 1, '"' + 'done' + '"', 2]));
-              }, function (err) {
-                console.log(err);
-              });
-            }
-          }, app.qt);
+          
           // },app.qt);
         });
 
@@ -375,25 +378,40 @@
         }
 
         function cc(which) {
-          var c = 0;
+          var crd = 0;
           var q = qb.slct("cid as c", 'cards',
                   "cid  = cid order by cid desc limit 1");
+                  try{
           db.transaction(function (tx) {
             tx.executeSql(q, [], function (tx, rs) {
-              c = rs.rows.item(0).c + 1;
-              var parent = ($(which).parent().parent());
-              var name;
-//                    var tid = $(parent).attr("id");
-//                    var spl = tid.split("_");
-//                    tid = spl[2];
-              if ((name = prompt("Create New Task"))) {
-                var l = gtid(which);
-                app.createCard(name, l, parent, c);
+              try{
+                if (rs.rows.length > 0)
+                  crd = rs.rows.item(0).c + 1;
+                else
+                  crd = 1;
+                var parent = ($(which).parent().parent());
+                console.log(parent);
+                var name;
+  //                    var tid = $(parent).attr("id");
+  //                    var spl = tid.split("_");
+  //                    tid = spl[2];
+                if ((name = prompt("Create New Task"))) {
+                  var l = gtid(which);
+                  app.createCard(name, l, parent, crd);
+                }
+              }catch(ex){
+                console.log(ex);
+                pid0();
+                window.location = ".";
               }
             });
           }, function (err) {
             console.log(err);
           });
+                  }catch(ex){
+                    console.log(ex);
+                    pid0();
+                  }
 
 
           setTimeout(function () {
