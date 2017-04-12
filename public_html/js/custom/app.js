@@ -1,6 +1,10 @@
 /**
  * Generated On: 2017-1-17
- * Class: app
+ * 
+ * @namespace qrumb
+ * 
+ * @class app
+ * @memberOf qrumb
  * Description: This class/object will manage create, read, edit and  delete
  */
 
@@ -44,11 +48,11 @@ var app = {
           //console.log(obj.item(0).nm);
 //        for (var a = 0; a <= obj.length; a++)
 //          console.log(obj.item(a).nm);
-          if (UILoad.pid >= -111) {
+          //if (UILoad.pid >= -100) {//untested change
             $('#landing').append(UILoad.placeTaskBar(obj, 0, 0, 4));
             $('#landing').append(UILoad.placeTaskBar(obj, 0, 1, 4));
             app.list();
-          }
+          //}
         });
       }, function (er) {
         console.log(er);
@@ -229,15 +233,7 @@ var app = {
   },
   read: function () {
     //TODO: Implement Me
-    if ((UILoad.pid == 0)) {
-      $('#proj').hide();
-      $('#landing').show();
-      console.log("land view");
-    } else {
-      $('#proj').show();
-      $('#landing').hide();
-      console.log("proj view");
-    }
+    viewToggle();
     UILoad.placeCards();
   },
   /**

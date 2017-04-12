@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS Qrumb.`Project` (
     `status` VARCHAR(1),
     `userid` NUMERIC(11) NOT NULL,
     `projectDesc` VARCHAR(200),
-    `date_expiring` DATE NOT NULL,
+    `date_expiring` DATE ,
     PRIMARY KEY (`projectid`, `userid`)
     -- UNIQUE (`projectid`)
 );

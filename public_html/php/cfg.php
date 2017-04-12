@@ -7,3 +7,6 @@ header("access-control-allow-origin: http://localhost:8383 ");
 //header("access-control-allow-origin: http://localhost ");
 require_once 'Q_ueryBuild.php';
 require_once 'app.php';
+require_once 'Logger.php';
+require_once 'DBConnect.php';
+require_once 'UILoad.php';

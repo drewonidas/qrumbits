@@ -77,6 +77,7 @@ class App
     }
     return $res;
   }
+  
   private function test($res,$email){
     if (property_exists($res,'c')) {
           $_SESSION['email'] = $email;

@@ -90,7 +90,7 @@ class Q_ueryBuild
     $str = "INSERT INTO ";
     $str .= $tble . " (";
     $str .= Q_ueryBuild::arrayJustify($cols) . " ) VALUES ( ";
-    $str .= Q_ueryBuild::arrayJustify($vals) . ");";
+    $str .= Q_ueryBuild::arrayJustify($vals) . ")";
     return $str;
   }
 
@@ -102,7 +102,7 @@ class Q_ueryBuild
     $res = "";
     if (is_array($obj)) {
       $res = "'{$obj[0]}'";
-      $res .= $this->Justify($obj);
+      $res .= Q_ueryBuild::Justify($obj);
     } else {
       $res = $obj;
     }
@@ -126,7 +126,8 @@ class Q_ueryBuild
   }
 
   /**
-   *@var void  $qry Query string
+   *@param string $qry Query string
+   *@return PDOStatement Description
    */
   public function transaction($qry) {
     // TODO: implement here

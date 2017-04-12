@@ -47,8 +47,8 @@ class DBConnect
                 base64_decode( "cGFzc3dvcmQK"));
         $sql = file_get_contents('php/mysql.sql');
         $this->protocol->exec($sql);
-        $f = fopen("ready.q", 'w');
-        fwrite($f, $sql) or die("QERR Permissions");
+        $f = fopen("ready.q", 'w') or die("[\"QERR Permissions\"]");
+        fwrite($f, $sql);
         fclose($f);
       }
       $this->protocol = new PDO($this->URL, base64_decode("cm9vdAo="),  

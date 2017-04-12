@@ -13,20 +13,21 @@ $qb = new Q_ueryBuild();
  $res = new ArrayObject();$app = new App();
  
  
- 
+/***
+ * index of array keys
+ * rl   :  role
+ * q    :  username
+ * c    :  userid
+ * log  :  login status-> null or 2
+ * state:  local state machine 
+ */
 
-  if (preg_match("/.+[@].+[.].+/", filter_input(INPUT_POST, 'email'))) {
-    //verify its correct format
-    
-    $email = filter_input(INPUT_POST, 'email');
-    
-    $res = $app->v_email($email,$qb,$res);
-    
-  } else {
-    //not registers
-    $_SESSION['state'] = 0;
-  }
-
+if (preg_match("/.+[@].+[.].+/", filter_input(INPUT_POST, 'email'))) {
+  $email = filter_input(INPUT_POST, 'email');
+  $res = $app->v_email($email,$qb,$res);
+} else {
+  $_SESSION['state'] = 0;
+}
 
 
 if (isset($_SESSION['state'])) {
@@ -36,20 +37,20 @@ if (isset($_SESSION['state'])) {
                   , filter_input(INPUT_POST, 'password'))
                   && $_SESSION['state'] == 1) {
     try {
-      $st = $qb->transaction("select userpassword as d, userid as c from  "
-      . "Qrumb.People where useremail = :eml");
-      $pwd = filter_input(INPUT_POST, 'password');
-      $pwd = hash("sha256",$pwd);
+      $st = $qb->transaction("select username as d, userid as c, role as r from  "
+      . "Qrumb.People where useremail = :eml and userpassword = :pwd");
+      $pwd = hash("sha256",filter_input(INPUT_POST, 'password'));
       $rs = NULL;
       $st->bindParam(":eml", $_SESSION['email']);
+      $st->bindParam(":pwd", $pwd);
       if ($st->execute()) {
         $rs = $st->fetch(PDO::FETCH_OBJ);
-        if ($rs->d == $pwd) {
+        if (strlen($rs->d)>0) {
           $_SESSION['state'] = 2;
-          $_SESSION['q']=$rs->d .":". $pwd;
+          $_SESSION['q']=$rs->d;
+          $_SESSION['rl']=$rs->r;
           $_SESSION['log'] = 2;
           $_SESSION['c'] = $rs->c;
-          
         } else{$_SESSION["state"] = 1;}
       } else {
         $_SESSION['hap'] = $st->errorInfo() . $st->queryString;
@@ -99,6 +100,8 @@ if (isset($_SESSION['state']) ) {
         $_SESSION['state'] = 1;
         if ($res['c'] > 0) {
           $_SESSION['state'] = 2;
+          $_SESSION['q'] = $usrname;
+          $_SESSION['rl'] = $role;
           $_SESSION['log'] = 2;
         } 
       } else {
@@ -127,7 +130,7 @@ if (isset($_SESSION['state'])){
     case 2://verified information
       $res['userstatus'] = $_SESSION['state'] - 1;
       $res['log'] = $_SESSION['log'];
-      $res['q'] = $_SESSION['q'];
+      $res['name'] = $_SESSION['q'];
       echo json_encode($res);
       break;
     default:

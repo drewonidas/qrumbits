@@ -2,6 +2,8 @@
  * Generated On: 2017-1-17
  * Class: UILoad
  * placecards must run after app.app()
+ * @class UILoad
+ * @memberOf qrumb
  */
 
 var UILoad = {
@@ -115,14 +117,17 @@ var UILoad = {
       tx.executeSql(q, [], function (tx, rs) {
         console.log(rs, "websql select id");
         UILoad.prj = rs.rows;
+        $("#project").text(">> " + rs.rows.item(0).nm);//register spec change
       });
     }, function (err) {
       console.log(err);
     });
   },
   /**
+   *
    * @param ID {} 
    * @return {null}
+   * 
    */
   getProject: function (ID) {
     //TODO: Implement Me
