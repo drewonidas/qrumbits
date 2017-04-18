@@ -48,7 +48,7 @@ if (isset($_SESSION['state'])) {
         if (strlen($rs->d)>0) {
           $_SESSION['state'] = 2;
           $_SESSION['q']=$rs->d;
-          $_SESSION['rl']=$rs->r;
+          $res['rl']=$rs->r;
           $_SESSION['log'] = 2;
           $_SESSION['c'] = $rs->c;
         } else{$_SESSION["state"] = 1;}
@@ -81,8 +81,7 @@ if (isset($_SESSION['state']) ) {
     $usrname = filter_input(INPUT_POST, 'username');
     try {
       $qb = new Q_ueryBuild();
-      $uid = $app->last_in($qb->db);$qb = new Q_ueryBuild();
-      //$_SESSION['typ'] = get_class($uid);
+      $uid = $app->last_in($qb->db);
       $qry=$qb->insert("Qrumb.People", "userid,useremail,username,userpassword,role",
               ":uid,:uemail,:uname,:upass,:role");
       $st = $qb->transaction($qry);
@@ -101,7 +100,7 @@ if (isset($_SESSION['state']) ) {
         if ($res['c'] > 0) {
           $_SESSION['state'] = 2;
           $_SESSION['q'] = $usrname;
-          $_SESSION['rl'] = $role;
+          $res['rl'] = $role;
           $_SESSION['log'] = 2;
         } 
       } else {

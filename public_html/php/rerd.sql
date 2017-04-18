@@ -99,5 +99,5 @@ CREATE TABLE IF NOT EXISTS Qrumb.`EventLog` (
 
 
 
-ALTER TABLE `TaskStatusBars` ADD FOREIGN KEY (`projectid`) REFERENCES `Project`(`projectid`);
+-- ALTER TABLE `TaskStatusBars` ADD FOREIGN KEY (`projectid`) REFERENCES `Project`(`projectid`);
 ALTER TABLE `Tasks` ADD FOREIGN KEY (`taskstatusid`) REFERENCES `TaskStatusBars`(`taskstatusid`);

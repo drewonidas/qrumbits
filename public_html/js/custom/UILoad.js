@@ -1,11 +1,14 @@
 /**
+ * @description app supresses Dev-Time  Errors
+ */
+var app = app || {};
+/**
  * Generated On: 2017-1-17
  * Class: UILoad
  * placecards must run after app.app()
  * @class UILoad
  * @memberOf qrumb
  */
-
 var UILoad = {
   //Constructor
   pid: '',
@@ -46,7 +49,6 @@ var UILoad = {
     this.selectProject(this.pid);
     this.getProject(this.pid);
     setTimeout(function () {
-        
       for (var a = 0; a < $("#proj").children().length; a++) {//post
         app.colNames.push($($("#proj").children().get(a)).attr("id"));
       }
@@ -112,7 +114,6 @@ var UILoad = {
     //TODO: Implement Me
     var q = app.qb.slct(['pname as nm', 'status'], "proj", "pid = '" +
             ID + "'");
-
     app.qb.db.transaction(function (tx) {
       tx.executeSql(q, [], function (tx, rs) {
         console.log(rs, "websql select id");
@@ -141,7 +142,7 @@ var UILoad = {
     app.qb.db.transaction(function (tx) {
       tx.executeSql(q, [], function (tx, rs) {
         UILoad.tsb = rs.rows;
-        console.log("tsb count",rs.rows);
+        console.log("tsb count");
         for (var a = 0; a < UILoad.tsb.length; a++) {
           var ts = UILoad.placeTaskBar(UILoad.tsb, UILoad.pid, a);
           $("#proj").append(ts);
@@ -163,9 +164,4 @@ var UILoad = {
       console.log(err);
     });
   }
-
-
-
-
-
-}
+};

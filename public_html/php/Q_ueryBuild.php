@@ -43,7 +43,7 @@ class Q_ueryBuild
   public static function slct($selection, $table, $what) {
     // TODO: implement here
     $str = "SELECT ";
-    $str .= Q_ueryBuild::arrayJustify($selection) . " FROM " . $table;
+    $str .= Q_ueryBuild::arrayJustify($selection,2) . " FROM " . $table;
     if ($what != null)
       $str .= " WHERE $what";
     return $str;
@@ -97,12 +97,15 @@ class Q_ueryBuild
   /**
    * @param void $obj depricate
    */
-  public static function arrayJustify($obj) {
+  public static function arrayJustify($obj,$mode = 1) {
     // TODO: implement here
     $res = "";
     if (is_array($obj)) {
-      $res = "'{$obj[0]}'";
-      $res .= Q_ueryBuild::Justify($obj);
+      $res = " {$obj[0]} ";
+      if ($mode == 1){
+        $res = "'{$obj[0]}'";
+      }
+      $res .= Q_ueryBuild::Justify($obj,$mode);
     } else {
       $res = $obj;
     }
@@ -113,13 +116,13 @@ class Q_ueryBuild
    * support function to arrayJustify
    * @param void $obj depricate
    */
-  public static function Justify($obj) {
+  public static function Justify($obj,$mode) {
     // TODO: implement here
     $res = "";
     $len = sizeof($obj);
     if ($obj[1] !== NULL) {
       for ($a = 1; $a < $len; $a++) {
-        $res .= ",'{$obj[$a]}'";
+        $res .= ($mode == 1)?",'{$obj[$a]}'":",{$obj[$a]}";
       }
     }
     return "$res";

@@ -8,11 +8,12 @@ if (isset($_SESSION['email'])){
   $uid = $a->v_email($email, $qb, $res);
   if ($uid['c']>0 && $_SESSION['log']==2)
   {
-    $u =$qb->db->prepare($qb->slct("username", 
+    $u =$qb->db->prepare($qb->slct("username,role as rl", 
             "Qrumb.People", "userid = {$uid['c']}"));
     if ($u->execute()){
       $as = $u->fetch(PDO::FETCH_OBJ);
       $uid['name']=$as->username;
+      $uid['rl']=$as->rl;
       $uid['userstatus']= 1;
     }
   }echo json_encode($uid);

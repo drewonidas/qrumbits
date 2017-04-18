@@ -16,7 +16,7 @@ if (strlen(filter_input(INPUT_POST, 'pnt'))>0){
     }
     if (isset($data['proj'])) {
       for ($a = 0; $a < count($data['proj']); $a++) {
-        $mv->selectProject($a);
+        $mv->setProject($a);
       }
     }
     if (isset($data['taskbars'])) {
@@ -24,14 +24,14 @@ if (strlen(filter_input(INPUT_POST, 'pnt'))>0){
         $mv->placeTaskBar($a);
       }
     }
-  //TODO: implement template records
-//  if (isset($data['templates'])){
-//    for($a = 0;$a < $data['templates'];$a++){
-//      $mv->projCard($a);
-//    }
-//  }
+    //TODO: implement template records
+    if (isset($data['templates'])){
+      for($a = 0;$a < count($data['templates']);$a++){
+        $mv->projTemplates($a);
+      }
+    }
   } catch (Exception $exc) {
-    echo $exc->getTraceAsString();
+    $_SESSION['error'] = $exc->getTraceAsString();
   }
 
   

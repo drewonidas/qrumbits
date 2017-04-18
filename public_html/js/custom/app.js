@@ -1,13 +1,14 @@
+
 /**
- * Generated On: 2017-1-17
- * 
- * @namespace qrumb
- * 
- * @class app
- * @memberOf qrumb
+ * @description UILoad and Q_ueryBuild supresses Dev-Time  Errors
+ */
+//var UILoad = UILoad || {};
+//var Q_ueryBuild = Q_ueryBuild || {};
+/**
+ * @description created On: 2017-1-17
+ * Last Edit: 
  * Description: This class/object will manage create, read, edit and  delete
  */
-
 var app = {
   colNames: [],
   cardCount: 0,
@@ -26,7 +27,6 @@ var app = {
     c = localStorage.getItem('c') ||this.qb.sinit();
     
     UILoad.pid = localStorage.getItem("pid");
-    console.log(localStorage);
     if (UILoad.pid >= 1) {
 
       app.read();
@@ -34,7 +34,7 @@ var app = {
       console.log("proj land");
       var pr = {};
       this.qb.db.transaction(function (tx) {
-        tx.executeSql(qb.slct(['pid as tip', 'pid', 'pname as nm'], 'proj',
+        tx.executeSql(app.qb.slct(['pid as tip', 'pid', 'pname as nm'], 'proj',
                 'author_id = ' + localStorage.usr)
                 , [], function (tx, rs) {
           pr = rs.rows;
@@ -62,18 +62,21 @@ var app = {
   /**
    * @documentation: Creates a Project Entry
    *    
-   *@param {string} name description
+   * @param {string} name description
+   * @param {int} usr userid
+   * @param {int} prty Project Template to use 
    * @return {null}
    */
   createProj: function (name, usr, prty) {
     //TODO: Implement Me 
     $("#mnu").modal('hide');
-    var p = 0;
+    var p = 1;
     var q = this.qb.slct('pid', 'proj', "pid = pid ORDER BY pid DESC LIMIT 1");
     try{
       this.qb.db.transaction(function (tx) {
         tx.executeSql(q, [], function (tx, rs) {
-          p = rs.rows.item(0).pid + 1 || 1;
+          if (rs.rows.length > 0)
+            p = rs.rows.item(0).pid + 1;  
         });
       }, function (err) {
         console.log(err);
@@ -93,17 +96,9 @@ var app = {
                 ['t_pid', 'pid'], [prty, p]);
         app.qb.transaction(ins);
         app.qb.transaction(ins0);
-
         UILoad.pid = p;
         localStorage.setItem("pid", UILoad.pid);
-        if ((UILoad.pid == 0)) {
-          $('#proj').hide();
-          $('#landing').show();
-        } else {
-          $('#proj').show();
-          $('#landing').hide();
-        }
-        //app.app();
+        viewToggle();
         app.cltime(i);
         console.log(ins0, ins);
       }
@@ -115,7 +110,7 @@ var app = {
     this.projtype = 0;
   },
   /**
-   * @param {int} pid description
+   * @param {int} set description
    * @param {int} tid description
    * @param {text} name
    * @param {int} pos description
@@ -153,7 +148,10 @@ var app = {
     return name;
   },
   /**
-   * @param  {}name 
+   * @param  {} name 
+   * @param  {} spl 
+   * @param  {} parent 
+   * @param  {} c 
    * @return {null}
    */
   createCard: function (name, spl, parent, c) {
@@ -214,9 +212,9 @@ var app = {
         console.log("test", rs.rows.length);
         for (var a = 0; a < app.lst.length; a++) {
           var base = document.createElement("div");
-          console.log($("#tid_0_p1"));
+          console.log("#tid_0_p1");
           $(base).appendTo('#tid_0_p1');
-          var crd = UILoad.projCard(app.lst[a].c, app.lst[a].nm);
+          var crd = UILoad.projCard(app.lst.item(a).c, app.lst.item(a).nm);
           $(base).replaceWith(crd);
           //console.log(q, crd, "list");
           //clearTimeout(i);
@@ -244,11 +242,11 @@ var app = {
    */
   delete: function (type, id) {
     //TODO: Implement Me 
-    qb.transaction("drop table proj");
-    qb.transaction("drop table taskbars");
-    qb.transaction("drop table templates");
-    qb.transaction("drop table cards");
+    app.qb.transaction("delete from proj");
+    app.qb.transaction("delete from taskbars");
+    app.qb.transaction("delete from templates");
+    app.qb.transaction("delete from cards");
     lg0();
     localStorage.setItem("pid", 0);
   }
-}
+};

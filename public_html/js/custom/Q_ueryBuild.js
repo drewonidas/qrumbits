@@ -1,6 +1,6 @@
 /**
- * Generated On: 2017-1-17
- * Class: Q_ueryBuild
+ * Created On: 2017-1-17
+ * Object: Q_ueryBuild
  * insert into taskbars (tname, pid,pos) valueS ('todo',1,0)
  */
 
@@ -36,7 +36,6 @@ var Q_ueryBuild = {
   /**
    * @param table {} UPDATE 'table
    * @param colepar {} SET 'col = 'par
-   *
    * @param id {} where 'id
    * @param val {}  = 'val
    * @return qs
@@ -134,7 +133,6 @@ var Q_ueryBuild = {
     qs += ") VALUES (";
     qs += this.arrayJustify(vals) + ")";
     return qs;
-
   }
 };
 
