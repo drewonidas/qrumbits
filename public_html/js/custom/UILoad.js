@@ -138,28 +138,29 @@ var UILoad = {
     //where taskbars.pid = templates.t_pid and templates.pid = proj.pid
 
     var q0 = app.qb.slct(["cid", 'cname as nm', 'tid', 'cdesc'], "cards", "pid ='" +
-            ID + "'");
+            ID + "' and assign =" + localStorage.usr);
     app.qb.db.transaction(function (tx) {
       tx.executeSql(q, [], function (tx, rs) {
         UILoad.tsb = rs.rows;
-        console.log("tsb count");
+        //console.log("tsb count");
         for (var a = 0; a < UILoad.tsb.length; a++) {
           var ts = UILoad.placeTaskBar(UILoad.tsb, UILoad.pid, a);
           $("#proj").append(ts);
         }
+        tx.executeSql(q0, [], function (tx, rs) {
+          //console.log(rs.rows.length);
+          UILoad.crds = rs.rows;
+          for (var a = 0; a < UILoad.crds.length; a++) {
+            var l = UILoad.pid + '_' + UILoad.crds.item(a).tid + '_' + UILoad.crds.item(a).cid;
+            var base = document.createElement("div");
+            console.log('#tid_' + UILoad.pid + '_' + UILoad.crds.item(a).tid);
+            $(base).appendTo('#tid_' + UILoad.pid + '_' + (UILoad.crds.item(a).tid===""?1:UILoad.crds.item(a).tid));
+            var crd = $(UILoad.cardTemplate(l, UILoad.crds.item(a).nm, UILoad.crds.item(a).cdesc));
+            $(base).replaceWith(crd);
+          }
+        });//then add the cardsl
       });
-      tx.executeSql(q0, [], function (tx, rs) {
-        //console.log(rs);
-        UILoad.crds = rs.rows;
-        for (var a = 0; a < UILoad.crds.length; a++) {
-          var l = UILoad.pid + '_' + UILoad.crds.item(a).tid + '_' + UILoad.crds.item(a).cid;
-          var base = document.createElement("div");
-          //console.log(this.crds.item(a).cdesc);
-          $(base).appendTo('#tid_' + UILoad.pid + '_' + UILoad.crds.item(a).tid);
-          var crd = $(UILoad.cardTemplate(l, UILoad.crds.item(a).nm, UILoad.crds.item(a).cdesc));
-          $(base).replaceWith(crd);
-        }
-      });//then add the cardsl
+        
     }, function (err) {
       console.log(err);
     });

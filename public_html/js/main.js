@@ -2,9 +2,10 @@
  * @description Created on : 18-04-2017
  * app UILoad Q_ueryBuild implemented to Suppress Errors Dev-Time
  * */
-//var app = app || {};
-//var UILoad = UILoad || {};
-//var Q_ueryBuild = Q_ueryBuild || {};
+var app = app || {};
+var UILoad = UILoad || {};
+var Q_ueryBuild = Q_ueryBuild || {};
+var DBConnect = DBConnect || {};
 var lg = false;
 var qb = app.qb;
 var db = qb.db;
@@ -20,7 +21,6 @@ UILoad.pid = localStorage.getItem('pid') || -100;
 function sign_in() {
   var t = $('#signemail');
   if (t.val().trim() === "") {//changed from == to ===
-
     message("cant be empty", $('#signemail'));
   } else {
     lg = true;
@@ -30,6 +30,132 @@ function sign_in() {
 
 if (window.hasOwnProperty('openDatabase')) {
 
+  //resolver()
+  var ndif1 = false, ndif2 = false, ndifdata = {}, loader = [];
+
+  function resolver() {
+    if (ndifdata !== {}) {
+      DBConnect.getdata('cards', 'cid  =  cid');
+      for (var x = 0; x < ndifdata['r']['proj'].length; x++) {
+        ndifdata['dat'] = ndifdata['r']['proj'][x];
+        //console.log(ndifdata['dat']);
+        DBConnect.datawr(ndifdata, loader.length, 'pid', 'proj');
+      }
+
+    }
+  }
+  function resolverC() {
+    if (ndifdata !== {}) {
+      DBConnect.getdata('cards', 'cid  =  cid');
+      for (var x = 0; x < ndifdata['r']['proj'].length; x++) {
+        ndifdata['dat'] = ndifdata['r']['proj'][x];
+        ndifdata['org'][0] = proj;
+        console.log(ndifdata['org']);
+        DBConnect.datawr(ndifdata, loader.length, 'pid');
+      }
+      console.log(JSON.stringify(DBConnect.token));
+
+    }
+  }
+  function overwrite() {
+
+    //app.delete();
+    $('#consync').modal('hide');
+    if (ndifdata !== {}) {
+      DBConnect.getdata('cards', 'cid  =  cid');
+      for (var x = 0; x < ndifdata['r']['proj'].length; x++) {
+        ndifdata['dat'] = ndifdata['r']['proj'][x];
+        //console.log(ndifdata['dat']);
+        //ndifdata['org'][0] = proj;
+        DBConnect.datawr(ndifdata, 0, 'pid', 'proj');
+        DBConnect.fetch =4;
+      }
+      $("#loading").modal("show");
+      var m = setInterval(function () {//safer
+        if (DBConnect.fetch > 0){
+          
+          console.log(DBConnect.fetch);
+          DBConnect.fetch--;
+        }
+        else
+        {
+          var a =  new CustomEvent('CompletedFetch',{detail:DBConnect.fetch});
+          window.dispatchEvent(a);
+          $("#loading").modal("hide");
+          app.cltime(m);
+        }
+      }, app.qt/2);
+    }
+  }
+  function reloader(e) {
+    localStorage.setItem('Sync', e.detail);
+    app.list();
+  }
+
+  function finaliser(e) {
+    //log caught
+    window.addEventListener("CompletedFetch",reloader);
+    console.log(e.detail, ndif1, ndif2);
+    if (ndif1 & ndif2) {
+      DBConnect.token.push(projs);
+      ndifdata['org'] = DBConnect.token || projs;
+      console.log(ndifdata, DBConnect.token);
+      setTimeout(function () {
+        var ndiff = DBConnect.ndiff(ndifdata['org'][0], ndifdata['dat'], 'pname', 'pdesc');
+        if (!ndiff) {
+          window.removeEventListener('ndiff',finaliser);
+          $('#consync').modal('show');
+        }
+        ndif1 = ndif2 = false;
+      }, app.qt);
+    }
+  }
+
+  function syncd() {
+    //catch thrown
+    window.addEventListener('ndiff', finaliser);
+    var p = [];
+    var q = this.qb.slct('pid', 'proj', "pid = pid ORDER BY pid ASC");
+    try {
+      this.qb.db.transaction(function (tx) {
+        tx.executeSql(q, [], function (tx, rs) {
+          if (rs.rows.length > 0)
+            for (var x = 0; x < rs.rows.length; x++)
+              p.push(rs.rows.item(x));
+          loader = p;
+          //if (rs.rows.length > 0)
+          var dif = new CustomEvent('ndiff', {detail: (rs.rows.length > 0) ? p[0].pid : 0});
+          DBConnect.getdata('proj', 'pid =' + ((rs.rows.length > 0) ? p[0].pid : 0));
+          ndif1 = true;
+          setTimeout(function () {
+            window.dispatchEvent(dif);//thrower
+          }, app.qt);
+        });
+      }, function (err) {
+        console.log(err);
+      });
+    } catch (ex) {
+      console.error(ex);
+    }
+    $.post('php/newmoduletest.php', {}, function (resp) {
+      if (resp !== undefined) {
+        var r;
+        if ((r = JSON.parse(resp))) {
+
+          //DBConnect.syncD(r);
+          var dif = new CustomEvent('ndiff', {detail: r['proj'].length});
+          ndif2 = true;
+          ndifdata['r'] = r;
+          //if (r['proj'][0]!==undefined)
+          ndifdata['dat'] = r['proj'][0];
+          setTimeout(function () {
+            window.dispatchEvent(dif);//thrower
+          }, app.qt);
+        }
+      }
+    }, 'TEXT');
+  }
+  //--/resolver
 
   function message(msg, t) {
     //alert(msg);
@@ -46,7 +172,7 @@ if (window.hasOwnProperty('openDatabase')) {
     var email1 =
             $('#signemail').val();//input box value
     var pass = $("#signpass").val();
-    var tst = /.+[@].+[\.].+/; //create regex
+    var tst = /.+[@].+[\.].+/; //create regex CREATE TABLE people ( uid INTEGER NOT NULL , uname VARCHAR(20) NOT NULL, uemail VARCHAR(72) NOT NULL, upassword VARCHAR(100), PRIMARY KEY (uid) )
     if (tst.test(email1))
     {
       $.post("php/data_verify.php",
@@ -55,9 +181,15 @@ if (window.hasOwnProperty('openDatabase')) {
           localStorage.setItem('usr', response.c);
           UILoad.pid = localStorage.pid;
           localStorage.setItem('rl', response.rl);
+          //search logged users 
+          //DBConnect.getdata('people', '');
+          qb.transaction(qb.insert('people', 
+          ['uid', 'uemail', 'role'], 
+          [response.c, email1, response.rl]));
           loda();
           $("#nm").text(response.name.toUpperCase());
           app.app();
+          localStorage.setItem("count", 0);
         } else if (response.userstatus === -1) {
           rg(email1);
         } else {
@@ -177,12 +309,15 @@ if (window.hasOwnProperty('openDatabase')) {
       console.log(err);
     });
     $("#lvl").click(function () {
-      if (UILoad.pid > 0)
+      if (UILoad.pid > 0) {
         localStorage.setItem("pid", 0);
-      else
+        DBConnect.connect();
+      } else
         lg0();
+
+      //$('#lvl').submit();
       //window.location = '.';
-    }).submit();
+    });
 
     $.post("php/get_data.php",
             {1: '1'},
@@ -217,17 +352,20 @@ if (window.hasOwnProperty('openDatabase')) {
   }
 
   function viewToggle() {
-    if (UILoad.pid == 0) {
+    if (UILoad.pid === 0) {//might cause errors
       $('#proj').hide();
       $('#landing').show();
       $("title").text("Landing");
+
       //console.log("land view");
     } else {
       $('#proj').show();
       $('#landing').hide();
       $("title").text("Project");
+
       //console.log("proj view");
     }
+
   }
 
   function loda() {
@@ -245,6 +383,7 @@ if (window.hasOwnProperty('openDatabase')) {
     $("#ct_4t").hide();
     $("#ct_5t").hide();
     $("#nvb").removeClass('hidden');
+    syncd();
   }
 
   function proj() {
@@ -274,8 +413,62 @@ if (window.hasOwnProperty('openDatabase')) {
 
   function ctpr(th)//create Template
   {
-    message(" to be implemented", th);
+    //message(" to be implemented", th);
+    
+    //$(".modal").modal('hide');
+    var p = 1;
+    var q = qb.slct('pid', 'proj', "pid = pid ORDER BY pid DESC LIMIT 1");
+    if ($('#ctn').val().trim()===""||$('#ct_1').val().trim()===""
+            ||$('#ct_2').val().trim()===""){
+      message("all fields must not be empty", th);
+      return;//stop execution;
+    }
+    $(".modal").modal('hide');
+    var nm = $('#ctn').val();
+    try{
+      qb.db.transaction(function (tx) {
+        tx.executeSql(q, [], function (tx, rs) {
+          if (rs.rows.length > 0)
+            p = rs.rows.item(0).pid + 1;  
+        });
+      }, function (err) {
+        console.log(err);
+      });
+    }catch (ex){
+      console.log(ex);
+      pid0();
+    }
+    var i = setInterval(function () {
+      if (p == 0 || p == undefined)
+        p = 1;
+      if ((p !== undefined || p !== 0)) {
+        var ins = qb.insert("proj",
+                ['pid', 'pname', 'date_created', 'date_modified', 'status', 'author_id'],
+                [p, '"' + nm  + '"', 'date()', 'date()', '"a"', '"' + 0 + '"']);
+        for (var x = 1; x <= co;x++){
+          var ins0 = qb.insert("taskbars",
+                    ['tid', 'pid', 'tname', 'pos'],
+                    [1, 1, '"' + $('#ct_'+x).val() + '"', 0]);
+                    app.qb.transaction(ins0);
+        }
+        app.qb.transaction(ins);
+        var base = document.createElement("div");
+        //console.log("#tid_0_p0");
+        $(base).appendTo('#tid_0_p0');
+        console.log(nm);
+        var crd = UILoad.projCard(p,nm,"template");
+        $(base).replaceWith(crd);
+        app.cltime(i);
+        console.log(ins0, ins);
+      }
+    }, app.qt);
+    //return name;
+    
     co = 2;
+    $('#ctn').val("");
+    for (var x = 1;x <= 5; x++){
+      $('#ct_'+x).val("");
+    }
     $("#ct_3t").hide();
     $("#ct_4t").hide();
     $("#ct_5t").hide();
@@ -320,7 +513,7 @@ if (window.hasOwnProperty('openDatabase')) {
           else
             crd = 1;
           var parent = ($(which).parent().parent());
-          console.log(parent);
+          console.log(parent.prop('id'));
           var name;
           if ((name = prompt("Create New Task"))) {
             var l = gtid(which);
@@ -338,8 +531,9 @@ if (window.hasOwnProperty('openDatabase')) {
 
 
 
-    setTimeout(function () {
 
+    setTimeout(function () {
+      //DBConnect.connect();
     }, app.qt);//needs testing // working *i3 4th gen chrome 1.7ghz
   }
   ;
@@ -371,6 +565,9 @@ if (window.hasOwnProperty('openDatabase')) {
       console.log(qb.update('cards'
               , "tid = '" + ev.srcElement.id.split('_')[2] + "'"
               , 'cid', '"' + co.split('_')[3] + '"'));
+      setTimeout(function () {
+        //DBConnect.connect();
+      }, app.qt);//needs testing // working *i3 4th gen chrome 1.7ghz
     }
   }
   function gtid(ths) {//get parent
@@ -386,13 +583,15 @@ if (window.hasOwnProperty('openDatabase')) {
     var spl = gtid(ths);
     $('#' + app.colNames[spl[2] % app.colNames.length])
             .append($(ths).parent());
-    console.log(app.colNames,app.colNames[spl[2] % app.colNames.length],$(ths).parent().attr('id').toString().split('_')[3]);
+    console.log(app.colNames, app.colNames[spl[2] % app.colNames.length], $(ths).parent().attr('id').toString().split('_')[3]);
     app.editCard($(ths).parent().attr('id').toString().split('_')[3],
             'tid', ((spl[2] % app.colNames.length) + 1));
 
     $('#tid_' + spl[1] + '_' + (spl[2])).remove($(ths).parent());
     console.log(spl);
-
+    setTimeout(function () {
+      //DBConnect.connect();
+    }, app.qt);//needs testing // working *i3 4th gen chrome 1.7ghz
   }
   function match(pnt) {
     for (var a = 0; a < app.colNames.length; a++)

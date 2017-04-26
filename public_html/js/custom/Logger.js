@@ -18,5 +18,8 @@ var Logger = {
     log: function(type, msg){
         //TODO: Implement Me
 
+    },
+    logE: function (e){
+      console.log(JSON.stringify(e.detail));
     }
-}
+};

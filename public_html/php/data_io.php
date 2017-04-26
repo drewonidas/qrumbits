@@ -9,6 +9,7 @@ if (strlen(filter_input(INPUT_POST, 'pnt'))>0){
   $data[filter_input(INPUT_POST, 'pnt')] = json_decode(filter_input(INPUT_POST, 'data'));
   try {
     $mv = new UILoad();
+    $mv->usr = isset($data['usr'])?$data['usr']:$mv->usr;
     if (isset($data['cards'])) {
       for ($a = 0; $a < count($data['cards']); $a++) {
         $mv->projCard($a);

@@ -2,8 +2,8 @@
 /**
  * @description UILoad and Q_ueryBuild supresses Dev-Time  Errors
  */
-//var UILoad = UILoad || {};
-//var Q_ueryBuild = Q_ueryBuild || {};
+var UILoad = UILoad || {};
+var Q_ueryBuild = Q_ueryBuild || {};
 /**
  * @description created On: 2017-1-17
  * Last Edit: 
@@ -91,7 +91,7 @@ var app = {
       if ((p !== undefined || p !== 0)) {
         var ins = this.qb.insert("proj",
                 ['pid', 'pname', 'date_created', 'date_modified', 'status', 'author_id'],
-                [p, '"' + name + '"', 'date()', 'date()', '"a"', '"' + usr + '"']);
+                [p, '"' + name + '"', 'date()', 'date()', '"a"', '"' + localStorage.usr + '"']);
         var ins0 = this.qb.insert("templates",
                 ['t_pid', 'pid'], [prty, p]);
         app.qb.transaction(ins);
@@ -160,7 +160,7 @@ var app = {
     tid = tid.split('_')[2];
     this.qb.transaction(this.qb.insert('cards'
             , ['cname', 'tid', 'cdesc', 'assign', 'pid']
-            , ['"' + name + '"', '"' + tid + '"', '""', '0', spl[1]]));
+            , ['"' + name + '"', '"' + tid + '"', '""',localStorage.usr, spl[1]]));
     var l = spl[1] + '_' + spl[2] + '_' + c;
     var newchild = UILoad.cardTemplate(l, name);
     $(parent).append(newchild);
@@ -198,7 +198,7 @@ var app = {
   },
   list: function () {
     var q = app.qb.slct(['pid as c', 'pname as nm', 'pdesc as d'], 'proj',
-            'author_id = ' + usr + ' and status = "a" limit 20');
+            'author_id = ' + usr + ' AND status = "a" ORDER by pid DESC limit 10');
     app.q = q;
     setTimeout(function () { console.log("list bgan");
     //SELECT tname,proj.pid,pos from taskbars, proj, templates where taskbars.pid = templates.t_pid and templates.pid = proj.pid
@@ -246,7 +246,9 @@ var app = {
     app.qb.transaction("delete from taskbars");
     app.qb.transaction("delete from templates");
     app.qb.transaction("delete from cards");
-    lg0();
     localStorage.setItem("pid", 0);
+    localStorage.setItem("c", 0);
+    //setTimeout(function (){location.reload();},3000);
+    
   }
 };

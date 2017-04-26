@@ -107,48 +107,7 @@ class UILoad {
   /**
    * @param int $ID 
    */
-  public function setProject($ID) {
-    // TODO: implement here
-    $qb = $this->qb;
-    $t = $this->tsb;
-    $d = $this->prj[$ID] or $this->prj;
-    //insert Project
-    $q = $qb->insert('Qrumb.Project'
-            , "{$t['pid'][0]},{$t['pname']},date_created,status,date_modified,userid,date_expiring "
-            , [$d->pid, $d->pname, $d->date_created, $d->status, $d->date_modified, $d->author_id, $d->date_created]);
-    $q .= "ON DUPLICATE KEY UPDATE {$t['pname']}='{$d->pname}'"
-            . ",{$t['date_modified']}= now(), {$t['pDesc']}='{$d->pDesc}'"
-            . ",{$t['status']}='{$d->status}'";
-    if (!$qb->db->query($q)) {
-      $_SESSION['error'] = $qb->db->errorInfo();
-    } else {
-      $_SESSION['error'] = $qb->db->errorInfo();
-    }
-  }
-
-  /**
-   * setter method Taskbar
-   * @param void $id
-   * @return int
-   */
-  public function placeTaskBar($id) {
-    // TODO: implement here
-    $qb = $this->qb;
-    $t = $this->tsb;
-    $d = $this->tsbr[$id] or $this->tsbr;
-    //insert Project
-    $q = $qb->insert('Qrumb.TaskStatusBars'
-            , "{$t['tid']},{$t['tname']},{$t['pid'][0]},{$t['pos']},userid"
-            , [$d->tid, $d->tname, $d->pid, $d->pos, 0]);
-    $q .= "ON DUPLICATE KEY UPDATE {$t['tname']}='{$d->tname}'"
-            . ", {$t['pid'][0]}='{$d->pid}'"
-            . ",{$t['pos']}='{$d->pos}'";
-    if (!$qb->db->query($q)) {
-      $_SESSION['error'] = $qb->db->errorInfo();
-    } else {
-      $_SESSION['error'] = $qb->db->errorInfo();
-    }
-  }
+  
 
   /**
    * @param void $l
@@ -160,6 +119,7 @@ class UILoad {
   }
 
   /**
+   * Getter
    * @param void $ID
    */
   public function getProject() {
@@ -171,7 +131,7 @@ class UILoad {
         , "date_created as {$r['date_created']}"
         , "date_modified as {$r['date_modified']}"
         , "status as {$r['status']}"
-        , "userid as {$r['userid']}"
+        , "userid as author_id"
         , "projectDesc as {$r['projectDesc']}"
             ], "Qrumb.Project", "userid = ?");
     $st = $qb->transaction($qry);
@@ -181,6 +141,7 @@ class UILoad {
   }
 
   /**
+   * getter
    * @return stdClass object with the Templates
    */
   public function getTemplate() {
@@ -190,12 +151,33 @@ class UILoad {
     $qry = $qb->slct(["templateid as {$r['templateid']} "
         , " projectid as pid "
         , " template_projectid as {$r['template_projectid']} "
-        , " project_userid as userid "
+//        , " project_userid as userid "
 //        , " template_userid"
             //, "projectDesc as {$r['projectDesc']}"
             ], " Qrumb.Templates ", " project_userid = ? ");
     $st = $qb->transaction($qry);
     $st->execute([$_SESSION['c']]);
+    $rss = $st->fetchAll() or array($r['projectid'] => -1);
+//    $_SESSION['error'] = [$st->errorInfo(),$st->queryString] ;
+    return $rss; //;
+  }
+  
+  /**
+   * @return stdClass object with the Tasks
+   */
+  public function getStatusBar() {
+    // TODO: implement properly
+    $qb = $this->qb;
+    $r = $this->bst;
+    $qry = $qb->slct(["projectid as pid "
+        , " Pos as pos "
+        , " taskstatusid as {$r['taskstatusid']} "
+        , " taskstatusname as {$r['taskstatusname']} "
+//        , " template_userid"
+            //, "projectDesc as {$r['projectDesc']}"
+            ], " Qrumb.TaskStatusBars ", " userid = ? ");
+    $st = $qb->transaction($qry);
+    $st->execute([0]);
     $rss = $st->fetchAll() or array($r['projectid'] => -1);
 //    $_SESSION['error'] = [$st->errorInfo(),$st->queryString] ;
     return $rss; //;
@@ -211,10 +193,10 @@ class UILoad {
     $qry = $qb->slct(["taskid as {$r['taskid']} "
         , " cname "
         , " taskstatusid as {$r['taskstatusid']} "
-        , " taskdesc as {$r['taskstatusid']} "
-//        , " template_userid"
-            //, "projectDesc as {$r['projectDesc']}"
-            ], " Qrumb.Templates ", " project_userid = ? ");
+        , " taskdesc as {$r['taskdesc']} "
+        , " userid as assign"
+        , "projectid as pid"
+            ], " Qrumb.Tasks ", " userid = ? ");
     $st = $qb->transaction($qry);
     $st->execute([$_SESSION['c']]);
     $rss = $st->fetchAll() or array($r['projectid'] => -1);
@@ -223,7 +205,8 @@ class UILoad {
   }
 
   /**
-   * this method is a setter method Tasks
+   * 
+   * this method is a setter method Tasks(cards)
    * @param void $ID
    */
   public function projCard($ID) {
@@ -231,15 +214,23 @@ class UILoad {
     $qb = $this->qb;
     $t = $this->tsb;
     $d = $this->crds[$ID] or $this->crds;
-    //insert Project
-    $q = $qb->insert('Qrumb.Tasks'
-            , "{$t['cid']},{$t['cname']},{$t['tid']},{$t['cdesc']},{$t['pid'][0]},userid"
-            , [$d->cid, $d->cname, $d->tid, $d->cdesc, $d->pid, $this->usr]);
-    $q .= "ON DUPLICATE KEY UPDATE {$t['cname']}='{$d->cname}'"
-            . ", {$t['cdesc']}='{$d->cdesc}'"
-            . ", {$t['assign']}='{$this->usr}'";
+    //insert Project else assigns tasks, 
+    if ($this->usr == $d->assign){
+      $q = $qb->insert('Qrumb.Tasks'
+              , "{$t['cid']},{$t['cname']},{$t['tid']},{$t['cdesc']},{$t['pid'][0]},userid"
+              , [$ID + 1, $d->cname, $d->tid, $d->cdesc, $d->pid, $d->assign]);
+      $q .= "ON DUPLICATE KEY UPDATE {$t['cname']}='{$d->cname}'"
+              . ", {$t['cdesc']}='{$d->cdesc}'"
+              . ", {$t['assign']}='{$d->assign}'";
+    }else{
+      $q = $qb->insert('Qrumb.Tasks'
+              , "{$t['cid']},{$t['cname']},{$t['tid']},{$t['cdesc']},{$t['pid'][0]},assign,userid"
+              , [$ID + 1, $d->cname, $d->tid, $d->cdesc, $d->pid, $d->assign,$this->usr]);
+      $q .= "ON DUPLICATE KEY UPDATE {$t['cname']}='{$d->cname}'"
+              . ", {$t['cdesc']}='{$d->cdesc}'"
+              . ", assign='{$d->assign}'";
+    }
     $qb->db->query($q);
-
     $_SESSION['error'] = $qb->db->errorInfo();
   }
 
@@ -253,15 +244,58 @@ class UILoad {
     $t = $this->tsb;
     $d = $this->tmpl[$ID] or $this->tmpl;
     //insert Project
+    $qb->db->query("DELETE FROM Templates where project_userid = {$this->usr}");
+   
     $q = $qb->insert('Qrumb.Templates'
             , "{$t['tmid']},{$t['pid'][0]},{$t['pid'][1]},project_userid,template_userid"
-            , [$d->tmid, $d->pid, $d->t_pid, $this->usr, 0]);
+            , [$ID + 1, $d->pid, $d->t_pid, $this->usr, 0]);
     $q .= "ON DUPLICATE KEY UPDATE {$t['pid'][0]}='{$d->pid}'"
             . ", {$t['pid'][1]}='{$d->t_pid}'"
             . ", project_userid ='{$this->usr}'";
     $qb->db->query($q);
 
     $_SESSION['error'] = $qb->db->errorInfo();
+  }
+  
+  public function setProject($ID) {
+    // TODO: implement here
+    $qb = $this->qb;
+    $t = $this->tsb;
+    $d = $this->prj[$ID] or $this->prj;
+    //insert Project
+    $q = $qb->insert('Qrumb.Project'
+            , "{$t['pid'][0]},{$t['pname']},date_created,status,date_modified,userid,date_expiring "
+            , [$ID + 1, $d->pname, $d->date_created, $d->status, $d->date_modified, $d->author_id, $d->date_created]);
+    $q .= "ON DUPLICATE KEY UPDATE {$t['pname']}='{$d->pname}'"
+            . ",{$t['date_modified']}= now(), {$t['pDesc']}='{$d->pDesc}'"
+            . ",{$t['status']}='{$d->status}'";
+    $qb->db->query($q);
+      $_SESSION['error'] = $qb->db->errorInfo();
+    
+  }
+
+  /**
+   * setter method Taskbar
+   * @param void $id
+   * @return int
+   */
+  public function placeTaskBar($id) {
+    // TODO: implement here
+    $qb = $this->qb;
+    $t = $this->tsb;
+    $d = $this->tsbr[$id] or $this->tsbr;
+    //insert Project
+    $q = $qb->insert('Qrumb.TaskStatusBars'
+            , "{$t['tid']},{$t['tname']},{$t['pid'][0]},{$t['pos']},userid"
+            , [$id + 1, $d->tname, $d->pid, $d->pos, 0]);
+    $q .= "ON DUPLICATE KEY UPDATE {$t['tname']}='{$d->tname}'"
+            . ", {$t['pid'][0]}='{$d->pid}'"
+            . ",{$t['pos']}='{$d->pos}'";
+    if (!$qb->db->query($q)) {
+      $_SESSION['error'] = $qb->db->errorInfo();
+    } else {
+      $_SESSION['error'] = $qb->db->errorInfo();
+    }
   }
 
 }
