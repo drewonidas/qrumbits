@@ -69,44 +69,102 @@ var app = {
    */
   createProj: function (name, usr, prty) {
     //TODO: Implement Me 
-    $("#mnu").modal('hide');
+    //if usr > 0
+    $(".modal").modal('hide');
     var p = 1;
-    var q = this.qb.slct('pid', 'proj', "pid = pid ORDER BY pid DESC LIMIT 1");
-    try{
-      this.qb.db.transaction(function (tx) {
-        tx.executeSql(q, [], function (tx, rs) {
-          if (rs.rows.length > 0)
-            p = rs.rows.item(0).pid + 1;  
+    var qb = app.qb;
+    var inp = [];
+    if (usr > 0){
+      var q = this.qb.slct('pid', 'proj', "pid = pid ORDER BY pid DESC LIMIT 1");
+      try{
+        qb.db.transaction(function (tx) {
+          tx.executeSql(q, [], function (tx, rs) {
+            if (rs.rows.length > 0)
+              p = rs.rows.item(0).pid + 1;  
+          });
+        }, function (err) {
+          console.log(err);
         });
-      }, function (err) {
-        console.log(err);
-      });
-    }catch (ex){
-      console.log(ex);
-      pid0();
-    }
-    var i = setInterval(function () {
-      if (p == 0 || p == undefined)
-        p = 1;
-      if ((p !== undefined || p !== 0)) {
-        var ins = this.qb.insert("proj",
-                ['pid', 'pname', 'date_created', 'date_modified', 'status', 'author_id'],
-                [p, '"' + name + '"', 'date()', 'date()', '"a"', '"' + localStorage.usr + '"']);
-        var ins0 = this.qb.insert("templates",
-                ['t_pid', 'pid'], [prty, p]);
-        app.qb.transaction(ins);
-        app.qb.transaction(ins0);
-        UILoad.pid = p;
-        localStorage.setItem("pid", UILoad.pid);
-        viewToggle();
-        app.cltime(i);
-        console.log(ins0, ins);
+      }catch (ex){
+        console.log(ex);
+        pid0();
       }
-    }, app.qt);
+      var i = setTimeout(function () {
+        if (p === 0 || p === undefined)
+          p = 1;
+        if ((p !== undefined || p !== 0)) {
+          var ins = qb.insert("proj",
+                  ['pid', 'pname', 'date_created', 'date_modified', 'status', 'author_id'],
+                  [p, '"' + name + '"', 'date()', 'date()', '"a"', '"' + usr + '"']);
+          var ins0 = qb.insert("templates",
+                  ['t_pid', 'pid'], [app.projtype, p]);
+          app.cltime(i);
+          qb.transaction(ins);
+          qb.transaction(ins0);
+          UILoad.pid = p;
+          localStorage.setItem("pid", UILoad.pid);
+          viewToggle();
+          
+          console.log(ins0, ins);
+        }
+      }, app.qt);
+    }
+    else if (usr === 0);
+     {
+      var q = qb.slct('pid', 'proj', "pid = pid ORDER BY pid DESC LIMIT 1");
+      var nm = $('#ctn').val();
+      for(var x = 0;x < 5;x++)
+        inp[x] = $('#ct_'+ parseInt(x+1).toString()).val();
+      try{
+        qb.db.transaction(function (tx) {
+          tx.executeSql(q, [], function (tx, rs) {
+            if (rs.rows.length > 0)
+              p = rs.rows.item(0).pid + 1;  
+          });
+        }, function (err) {
+          console.log(err);
+        });
+      }catch (ex){
+        console.log(ex);
+        //pid0();
+      }
+      var i = setInterval(function () {
+        if (p === 0 || p === undefined)
+          p = 1;
+        if ((p !== undefined || p !== 0)) {
+          window.ct = (window.ct===1)?2:window.ct;
+          var ins = qb.insert("proj",
+                  ['pid', 'pname', 'date_created', 'date_modified', 'status', 'author_id'],
+                  [p, '"' + nm  + '"', 'date()', 'date()', '"a"', '"' + 0 + '"']);
+          for (var x = 1; x <= window.co; x++){
+            var ins0 = qb.insert("taskbars",
+                      ['tid', 'pid', 'tname', 'pos'],
+                      [x+c, window.ct , '"' + inp[x-1] + '"', x-1]);
+            app.qb.transaction(ins0);
+            //console.log(ins0,inp[x-1]);
+          }
+          localStorage.ct++;
+          app.qb.transaction(ins);
+          var base = document.createElement("div");
+          //console.log("#tid_0_p0");
+          $(base).appendTo('#tid_0_p0');
+          console.log(nm);
+          var crd = UILoad.projCard(p,nm,"template");
+          $(base).replaceWith(crd);
+          app.cltime(i);
+          console.log(ins0, ins);
+          ctpclean();
+        }
+      }, app.qt);
+    }
     return name;
   },
   cltime: function (ts) {
-    clearInterval(ts);
+    try{
+      clearInterval(ts);
+    }catch (ex){
+      clearTimeout(ts);
+    }
     this.projtype = 0;
   },
   /**
@@ -198,7 +256,9 @@ var app = {
   },
   list: function () {
     var q = app.qb.slct(['pid as c', 'pname as nm', 'pdesc as d'], 'proj',
-            'author_id = ' + usr + ' AND status = "a" ORDER by pid DESC limit 10');
+            'author_id = ' + localStorage.usr + ' AND status = "a" ORDER by pid DESC limit 10');
+    var q0 = app.qb.slct(['pid as c', 'pname as nm', 'pdesc as d'], 'proj',
+            'author_id = ' + 0 + ' AND status = "a" ORDER by pid DESC limit 10');
     app.q = q;
     setTimeout(function () { console.log("list bgan");
     //SELECT tname,proj.pid,pos from taskbars, proj, templates where taskbars.pid = templates.t_pid and templates.pid = proj.pid
@@ -214,6 +274,24 @@ var app = {
           var base = document.createElement("div");
           console.log("#tid_0_p1");
           $(base).appendTo('#tid_0_p1');
+          var crd = UILoad.projCard(app.lst.item(a).c, app.lst.item(a).nm);
+          $(base).replaceWith(crd);
+          //console.log(q, crd, "list");
+          $(".modal").modal('hide');
+        }
+      }
+      });
+      tx.executeSql(q0, [], function (tx, rs) {
+        app.lst = rs.rows;
+        console.log("started");
+      if (app.lst === undefined||app.lst.length === 0) {
+        console.log("p0>nothing found");
+      } else {
+        console.log("test", rs.rows.length);
+        for (var a = 0; a < app.lst.length; a++) {
+          var base = document.createElement("div");
+          console.log("#tid_0_p0");
+          $(base).appendTo('#tid_0_p0');
           var crd = UILoad.projCard(app.lst.item(a).c, app.lst.item(a).nm);
           $(base).replaceWith(crd);
           //console.log(q, crd, "list");
@@ -242,13 +320,17 @@ var app = {
    */
   delete: function (type, id) {
     //TODO: Implement Me 
-    app.qb.transaction("delete from proj");
-    app.qb.transaction("delete from taskbars");
-    app.qb.transaction("delete from templates");
-    app.qb.transaction("delete from cards");
+    app.qb.db.transaction(function (tx){//for speed
+      tx.executeSql("delete from proj");
+      tx.executeSql("delete from taskbars");
+      tx.executeSql("delete from templates");
+      tx.executeSql("delete from cards");
+    });
     localStorage.setItem("pid", 0);
     localStorage.setItem("c", 0);
-    //setTimeout(function (){location.reload();},3000);
+    localStorage.setItem("ct", 0);
+    localStorage.setItem("Sync", 1);
+    setTimeout(function (){location.reload();},app.qt);
     
   }
 };

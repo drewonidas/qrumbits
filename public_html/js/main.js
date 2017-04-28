@@ -13,11 +13,12 @@ var co = 2;
 var res = "";
 var usr = localStorage.getItem('usr') || 0;
 var c = localStorage.getItem('c') || 0;
+var ct = localStorage.getItem('ct') || 1;
+var Sync = localStorage.getItem('Sync') || 1;
+localStorage.setItem('Sync',Sync);
 var trs = [0, 0, 0];
 $('[data-toggle="tooltip"]').tooltip();
-UILoad.pid = localStorage.getItem('pid') || -100;
-//console.log(pid);
-//if (pid == -100) {
+UILoad.pid = localStorage.getItem('pid') || 0;
 function sign_in() {
   var t = $('#signemail');
   if (t.val().trim() === "") {//changed from == to ===
@@ -34,47 +35,16 @@ if (window.hasOwnProperty('openDatabase')) {
   var ndif1 = false, ndif2 = false, ndifdata = {}, loader = [];
 
   function resolver() {
+    $('.modal').modal('hide');
     if (ndifdata !== {}) {
       DBConnect.getdata('cards', 'cid  =  cid');
       for (var x = 0; x < ndifdata['r']['proj'].length; x++) {
         ndifdata['dat'] = ndifdata['r']['proj'][x];
-        //console.log(ndifdata['dat']);
-        DBConnect.datawr(ndifdata, loader.length, 'pid', 'proj');
-      }
-
-    }
-  }
-  function resolverC() {
-    if (ndifdata !== {}) {
-      DBConnect.getdata('cards', 'cid  =  cid');
-      for (var x = 0; x < ndifdata['r']['proj'].length; x++) {
-        ndifdata['dat'] = ndifdata['r']['proj'][x];
-        ndifdata['org'][0] = proj;
-        console.log(ndifdata['org']);
-        DBConnect.datawr(ndifdata, loader.length, 'pid');
-      }
-      console.log(JSON.stringify(DBConnect.token));
-
-    }
-  }
-  function overwrite() {
-
-    //app.delete();
-    $('#consync').modal('hide');
-    if (ndifdata !== {}) {
-      DBConnect.getdata('cards', 'cid  =  cid');
-      for (var x = 0; x < ndifdata['r']['proj'].length; x++) {
-        ndifdata['dat'] = ndifdata['r']['proj'][x];
-        //console.log(ndifdata['dat']);
-        //ndifdata['org'][0] = proj;
-        DBConnect.datawr(ndifdata, 0, 'pid', 'proj');
-        DBConnect.fetch =4;
+        DBConnect.datawr(ndifdata, loader['pid'], 'pid', 'proj');
       }
       $("#loading").modal("show");
       var m = setInterval(function () {//safer
         if (DBConnect.fetch > 0){
-          
-          console.log(DBConnect.fetch);
           DBConnect.fetch--;
         }
         else
@@ -87,9 +57,40 @@ if (window.hasOwnProperty('openDatabase')) {
       }, app.qt/2);
     }
   }
+  function overwrite() {
+
+    //app.delete();
+    $('.modal').modal('hide');
+    if (ndifdata !== {}) {
+      DBConnect.getdata('cards', 'cid  =  cid');
+      for (var x = 0; x < ndifdata['r']['proj'].length; x++) {
+        ndifdata['dat'] = ndifdata['r']['proj'][x];
+        
+        //console.log(ndifdata['dat']);
+        //ndifdata['org'][0] = proj;
+        DBConnect.datawr(ndifdata, 0, 'pid', 'proj');
+        DBConnect.fetch =4;
+      }
+      $("#loading").modal("show");
+      var m = setInterval(function () {//safer
+        if (DBConnect.fetch > 0){
+          
+          //console.log(DBConnect.fetch);
+          DBConnect.fetch--;
+        }
+        else
+        {
+          var a =  new CustomEvent('CompletedFetch',{detail:DBConnect.fetch});
+          window.dispatchEvent(a);
+          app.cltime(m);
+        }
+      }, app.qt/4);
+    }
+  }
   function reloader(e) {
     localStorage.setItem('Sync', e.detail);
     app.list();
+    
   }
 
   function finaliser(e) {
@@ -97,11 +98,11 @@ if (window.hasOwnProperty('openDatabase')) {
     window.addEventListener("CompletedFetch",reloader);
     console.log(e.detail, ndif1, ndif2);
     if (ndif1 & ndif2) {
-      DBConnect.token.push(projs);
-      ndifdata['org'] = DBConnect.token || projs;
-      console.log(ndifdata, DBConnect.token);
+      DBConnect.token = (DBConnect.token.length === 0)?projs:DBConnect.token;
+      //DBConnect.token.push();
+      if (parseInt(localStorage.getItem('Sync'))===1)
       setTimeout(function () {
-        var ndiff = DBConnect.ndiff(ndifdata['org'][0], ndifdata['dat'], 'pname', 'pdesc');
+        var ndiff = DBConnect.ndiff(DBConnect.token, ndifdata['dat'], 'pname', 'pdesc');
         if (!ndiff) {
           window.removeEventListener('ndiff',finaliser);
           $('#consync').modal('show');
@@ -124,8 +125,8 @@ if (window.hasOwnProperty('openDatabase')) {
               p.push(rs.rows.item(x));
           loader = p;
           //if (rs.rows.length > 0)
-          var dif = new CustomEvent('ndiff', {detail: (rs.rows.length > 0) ? p[0].pid : 0});
-          DBConnect.getdata('proj', 'pid =' + ((rs.rows.length > 0) ? p[0].pid : 0));
+          var dif = new CustomEvent('ndiff', {detail: (rs.rows.length > 0) ? p[DBConnect.shift - 1].pid : 0});
+          DBConnect.getdata('proj', 'pid =' + ((rs.rows.length > 0) ? p[DBConnect.shift - 1].pid : 0));
           ndif1 = true;
           setTimeout(function () {
             window.dispatchEvent(dif);//thrower
@@ -285,11 +286,15 @@ if (window.hasOwnProperty('openDatabase')) {
     qb.init();
     db.transaction(function (tx) {
       var qry = qb.slct('count(*) as c', 'taskbars');
+      var q2 = "SELECT distinct pid,tname FROM taskbars GROUP BY pid ORDER BY pid DESC";
       tx.executeSql(qry, [], function (tx, rs) {
+        
         if (rs.rows.length > 0)
           c = rs.rows.item(0).c;
+        else
+          c = 0;
         localStorage.setItem('c', c);
-        if (c == 0 || c == undefined) {
+        if (c === 0) {
           db.transaction(function (tx) {
             tx.executeSql(qb.insert("taskbars",
                     ['tid', 'pid', 'tname', 'pos'],
@@ -300,23 +305,47 @@ if (window.hasOwnProperty('openDatabase')) {
             tx.executeSql(qb.insert("taskbars",
                     ['tid', 'pid', 'tname', 'pos'],
                     [3, 1, '"' + 'done' + '"', 2]));
+            c = 3;
+            localStorage.c = c;
           }, function (err) {
             console.log(err);
           });
         }
+      });
+      
+      tx.executeSql(q2, [], function (tx, rs) {
+        if (rs.rows.length > 0)
+          ct = rs.rows.item(0).pid + 1;
+        else
+          ct = 1;
+        localStorage.setItem('ct', ct);
+        DBConnect.shift = (ct - 1);
+        if (rs.rows.length > 1){
+          console.log('addTempl',rs.rows.item(0).pid ,rs.rows.item(0).tname);
+          for (var x= 2; x <= rs.rows.length; x++){
+            $('#tmladd').append(
+                    '<div class="form-group">'
+                    +'<button class="btn btn-success form-control" onclick="create('
+                    + (x) + ')"> Template '+ (x-1) +'</button></div>');
+          }
+        }
+        }, function (err) {
+          console.log(err);
       });
     }, function (err) {
       console.log(err);
     });
     $("#lvl").click(function () {
       if (UILoad.pid > 0) {
+        
         localStorage.setItem("pid", 0);
-        DBConnect.connect();
+        if (parseInt(localStorage.getItem('Sync')) === 1)
+          DBConnect.connect();
+        else
+          location.reload();
       } else
         lg0();
-
-      //$('#lvl').submit();
-      //window.location = '.';
+      //setTimeout(function(){location.reload(true);},app.qt*5);
     });
 
     $.post("php/get_data.php",
@@ -350,7 +379,10 @@ if (window.hasOwnProperty('openDatabase')) {
     viewToggle();
     app.app();
   }
-
+  function del(th){
+    console.log($(th).parent().parent().prop('id'));
+    $(th).parent().parent().remove();
+  }
   function viewToggle() {
     if (UILoad.pid === 0) {//might cause errors
       $('#proj').hide();
@@ -393,11 +425,11 @@ if (window.hasOwnProperty('openDatabase')) {
     if ($('#role').val() === 'm')
       $('#ctemp').modal('show');
   }
-  function create() {
+  function create(typ) {
     var name;
     setTimeout(function () {
       if ((name = prompt("Project Name", "please enter Projects name"))) {
-        app.prototype = 1;
+        app.projtype = ((typ===undefined)?1:typ) ;
         app.createProj(name, usr, 1);
         setTimeout(function () {
           app.read();
@@ -407,64 +439,23 @@ if (window.hasOwnProperty('openDatabase')) {
   }
 
   function ctp() {
-    $('#mnu').modal("hide");
+    $('.modal').modal("hide");
     $('#tml').modal("show");
   }
 
   function ctpr(th)//create Template
   {
-    //message(" to be implemented", th);
-    
-    //$(".modal").modal('hide');
-    var p = 1;
-    var q = qb.slct('pid', 'proj', "pid = pid ORDER BY pid DESC LIMIT 1");
+
     if ($('#ctn').val().trim()===""||$('#ct_1').val().trim()===""
             ||$('#ct_2').val().trim()===""){
       message("all fields must not be empty", th);
       return;//stop execution;
     }
-    $(".modal").modal('hide');
-    var nm = $('#ctn').val();
-    try{
-      qb.db.transaction(function (tx) {
-        tx.executeSql(q, [], function (tx, rs) {
-          if (rs.rows.length > 0)
-            p = rs.rows.item(0).pid + 1;  
-        });
-      }, function (err) {
-        console.log(err);
-      });
-    }catch (ex){
-      console.log(ex);
-      pid0();
-    }
-    var i = setInterval(function () {
-      if (p == 0 || p == undefined)
-        p = 1;
-      if ((p !== undefined || p !== 0)) {
-        var ins = qb.insert("proj",
-                ['pid', 'pname', 'date_created', 'date_modified', 'status', 'author_id'],
-                [p, '"' + nm  + '"', 'date()', 'date()', '"a"', '"' + 0 + '"']);
-        for (var x = 1; x <= co;x++){
-          var ins0 = qb.insert("taskbars",
-                    ['tid', 'pid', 'tname', 'pos'],
-                    [1, 1, '"' + $('#ct_'+x).val() + '"', 0]);
-                    app.qb.transaction(ins0);
-        }
-        app.qb.transaction(ins);
-        var base = document.createElement("div");
-        //console.log("#tid_0_p0");
-        $(base).appendTo('#tid_0_p0');
-        console.log(nm);
-        var crd = UILoad.projCard(p,nm,"template");
-        $(base).replaceWith(crd);
-        app.cltime(i);
-        console.log(ins0, ins);
-      }
-    }, app.qt);
+    app.createProj("name",0,0);
     //return name;
-    
-    co = 2;
+  }
+  function ctpclean(){
+    window.co = 2;
     $('#ctn').val("");
     for (var x = 1;x <= 5; x++){
       $('#ct_'+x).val("");
@@ -528,15 +519,9 @@ if (window.hasOwnProperty('openDatabase')) {
     }, function (err) {
       console.log(err);
     });
-
-
-
-
     setTimeout(function () {
-      //DBConnect.connect();
     }, app.qt);//needs testing // working *i3 4th gen chrome 1.7ghz
   }
-  ;
   function typ(ths) {
     //console.log($(ths).val());
     app.editCard($(ths).attr('id').toString().split('_')[3],
@@ -566,7 +551,7 @@ if (window.hasOwnProperty('openDatabase')) {
               , "tid = '" + ev.srcElement.id.split('_')[2] + "'"
               , 'cid', '"' + co.split('_')[3] + '"'));
       setTimeout(function () {
-        //DBConnect.connect();
+        localStorage.setItem("Sync",-1);
       }, app.qt);//needs testing // working *i3 4th gen chrome 1.7ghz
     }
   }
@@ -581,17 +566,17 @@ if (window.hasOwnProperty('openDatabase')) {
   }
   function adv(ths) {
     var spl = gtid(ths);
-    $('#' + app.colNames[spl[2] % app.colNames.length])
-            .append($(ths).parent());
-    console.log(app.colNames, app.colNames[spl[2] % app.colNames.length], $(ths).parent().attr('id').toString().split('_')[3]);
+    var txt = '#' + app.colNames[(spl[2]) % app.colNames.length];
+    $(txt).append($('#'+$(ths).parent().attr('id')));
+    console.log("advs",txt, app.colNames[spl[2] % app.colNames.length], $(ths).parent().attr('id').toString().split('_')[3]);
     app.editCard($(ths).parent().attr('id').toString().split('_')[3],
             'tid', ((spl[2] % app.colNames.length) + 1));
-
-    $('#tid_' + spl[1] + '_' + (spl[2])).remove($(ths).parent());
-    console.log(spl);
+    
     setTimeout(function () {
-      //DBConnect.connect();
+      //$('#'+$(ths).parent().attr('id')).remove();
+      localStorage.setItem("Sync",-1);
     }, app.qt);//needs testing // working *i3 4th gen chrome 1.7ghz
+    
   }
   function match(pnt) {
     for (var a = 0; a < app.colNames.length; a++)
@@ -610,6 +595,12 @@ if (window.hasOwnProperty('openDatabase')) {
     UILoad.tsb = null;
     //app.delete();//wait ntil sync implementation the implement this
     $.post("php/logout.php", {}, function () {}, "HTML");
+    location.reload();
+  }
+  function beautifier(){
+    console.log($("#proj").children().first().attr('id'));
+    //$("#proj").children().first().addClass('');
+    //$("#proj:nth-child(2)").prop('id');
   }
 } else {
   if (!window.hasOwnProperty('openDatabase'))

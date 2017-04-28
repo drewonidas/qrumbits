@@ -52,6 +52,7 @@ var UILoad = {
       for (var a = 0; a < $("#proj").children().length; a++) {//post
         app.colNames.push($($("#proj").children().get(a)).attr("id"));
       }
+      beautifier();
     }, app.qt);
   },
   /**
@@ -74,7 +75,7 @@ var UILoad = {
          <label> description:</label>\
          <textarea  id="ta_' + l
             + '"style="width: 100%" onblur="typ(this)">' + txt + '</textarea>\
-         <button onclick="$(this).parent().parent().hide()">delete</button>\
+         <button onclick="del(this)">delete</button>\
       </div>\
       <button class="btn pull-right" \
          onclick="adv(this)" title="Advance">>></button>\
@@ -101,7 +102,7 @@ var UILoad = {
          <label> description:</label>\
          <textarea  id="ta_' + l
             + '" style="width: 100%" onblur="ptyp(this)">' + txt + '</textarea>\
-         <button onclick="$(this).parent().parent().hide()">delete</button>\
+         <button onclick="del(this)">delete</button>\
       </div>\
       </div>';
     return newchild;

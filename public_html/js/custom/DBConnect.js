@@ -14,9 +14,9 @@ var DBConnect = {
   protocol: null,
   Key: Q_ueryBuild,
   token: null,
-  shift:null,
+  shift:1,
   mapp:{},
-  fetch:null,
+  fetch:4,
   DBConnect: function () {
     //Constructor
     DBConnect.protocol = new $.Deferred();
@@ -29,6 +29,7 @@ var DBConnect = {
     this.token = {};
     DBConnect.URL = 0;
     //this.token['cnt'] = 0;
+    DBConnect.mapp.usr = localStorage.getItem('usr');
     window.addEventListener('syncU', Logger.logE);
     DBConnect.transAct('proj');
     DBConnect.transAct('taskbars');
@@ -43,6 +44,38 @@ var DBConnect = {
         c.code = 0;
         //console.log(JSON.stringify(c));
         DBConnect.evm(c, localStorage.getItem('usr'));
+        app.cltime(iv);
+        //alert('done');
+        DBConnect.token = null;
+        alert("SYncing");
+      }
+
+    }, app.qt);
+    //DBConnect.evm(this.token,localStorage.getItem('usr'));
+
+  },
+  
+  conSync: function (id,usr) {
+    //TODO: Implement Me
+    this.token = {};
+    DBConnect.URL = 0;
+    //this.token['cnt'] = 0;
+    //var qadd = " WHERE ";
+    DBConnect.mapp.usr = id;
+    window.addEventListener('syncU', Logger.logE);
+    DBConnect.transAct('proj WHERE pid ='+id +"author_id ="+usr);
+    DBConnect.transAct('taskbars');
+    DBConnect.templateRoutine();
+    DBConnect.transAct('cards WHERE pid ='+id );
+    var iv = setInterval(function () {
+      if (DBConnect.URL === 4) {
+
+        var cx = {};
+        cx = DBConnect.token;
+        cx.usr = localStorage.getItem('usr');
+        cx.code = 0;
+        //console.log(JSON.stringify(c));
+        DBConnect.evm(cx, localStorage.getItem('usr'));
         app.cltime(iv);
         //alert('done');
         DBConnect.token = null;
@@ -67,7 +100,7 @@ var DBConnect = {
         var i = JSON.stringify(info);
         DBConnect.token[slctn] = i;
         //DBConnect.token['cnt']++;
-        $.post('php/data_io.php', {pnt: slctn, data: i}, function (data) {
+        $.post('php/data_io.php', {pnt: slctn, data: i,usr:DBConnect.mapp.usr}, function (data) {
           if (data.trim() !== '')
           {
             console.log('worked');
@@ -159,10 +192,11 @@ var DBConnect = {
     //TODO: Implement Me
     try {
       if (dat[idx1]!==undefined&&org[idx1]!==undefined)
+        console.log('dat',dat,'org',org);
       return (dat[idx1] === org[idx1] &&
               dat[idx2] === org[idx2]);
     }catch(ex){
-      this.connect();
+      //this.connect();
       return false;
       
    }
@@ -191,9 +225,10 @@ var DBConnect = {
     var qc = [];
     var qd = [];
     //var ix = [];
-    //console.log(data['dat']);
+   //console.log(o,i);
+    if (i === o)return;
     this.shift = idn === 'pid'? idx : 0;
-    for (var a in o[0]){
+    for (var a in projs){
       qc.push(a);
       if (a !== idn){
         //console.log(i[a]===""?"emt":i[a]);
@@ -204,7 +239,7 @@ var DBConnect = {
       }
       //$('.modal').modal('hide');
     }
-    
+    //console.log("datastreams",qc,qd);
     DBConnect.Key.transaction(this.Key.insert(tbl,qc,qd));
     //console.log((parseInt(i[a]) +  parseInt(idx)));
     var tmpl = data['r']['templates'];
@@ -223,7 +258,7 @@ var DBConnect = {
 
     var d = data['r']['cards'];
     //DBConnect.getdata('cards','cid  =  cid');
-    console.log(DBConnect.fetch);
+    //console.log(DBConnect.fetch);
     this.datac(d,i);
     //DBConnect.fetch++;
   },

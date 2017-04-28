@@ -23,48 +23,41 @@
   </head>
   <body>
     <!--[if lt IE 8]>
-    <p class="browserupgrade">You are using an <strong>outdated</strong>
+    <p class="browserupgrade">You are using an <strong>Unsupported</strong>
         browser. Please <a href="http://browsehappy.com/">upgrade your browser</a>
         to improve your experience.</p>
     <![endif]-->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+          <a  class="navbar-toggle collapsed" data-toggle="collapse"
                   data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
-          </button>
+          </a>
           <a class="navbar-brand" href="#">Q_rumBits 	<span id="project"></span> </a>
         </div>
-        <div  id="navbar" class="navbar-collapse collapse">
-          
-          <form id="nvb" class="navbar-form navbar-right hidden" role="form" action="." method="post">
-            <div class="form-group">
-              
-            </div>
-
+        <div  id="navbar" class="navbar-collapse collapse">          
+          <div id="nvb" class="navbar-form navbar-right hidden" role="form">
             <div class="form-group form-control" >
               
               <label class="form-inline"> Role: </label>
-              <select id="role" class="form-inline btn-default" onchange="message('to be Implemented',this)">
+              <select id="role" class="form-inline btn-default" onchange="message('changed role',this)">
                 <option value="t">Member</option>
                 
               </select>
             </div>
             <div class="form-control" style="height:3em">hello <span id="nm"></span>,
-              <button type='submit' class="btn btn-sm btn-danger" id="lvl">X </button></div>
-            <div class="form-group">
-              <input class="btn btn-success" onclick="DBConnect.connect()"
-                     value="BackUp">
-            </div>
-
-            <button onclick="app.delete()" title="When Debbugging" class="btn btn-danger">
+              <button class="btn btn-sm btn-danger" id="lvl">X </button></div>
+            <div class="form-group-sm">
+              <button class="btn btn-success btn-xs" onclick="DBConnect.connect()">
+                BackUp</button>
+              <button onclick="app.delete()" title="When Debbugging" class="btn btn-danger btn-xs">
               complete reset</button>
-
-          </form>
+            </div>
+          </div>
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
@@ -155,7 +148,8 @@
       <div class="modal-content modal-dialog modal-sm form-group" >
         <div class="modal-header"> Template List
           <button id="e" class="close" data-dismiss="modal">x</button>
-        </div><div class="form-group-sm container-fluid"><div class="form-group">
+        </div><div class="form-group-sm container-fluid" id="tmladd">
+          <div class="form-group">
             <button class="btn btn-success form-control" onclick="create()">Default</button>
           </div>
         </div>
@@ -176,11 +170,11 @@
         </div>
       </div>
     </div><!--confirm sync-->
-    <div class="modal" id="loading">
+    <div class="modal " id="loading">
       <div class="">
-      <img class="center-block img-circle" src="loading.gif" alt="">
-        
-      </div> </div>
+      <img class="center-block img-circle hfs" src="loading.gif" alt="">
+      <h1 class="center-block modal-content modal-sm text-center"> Syncing </h1>
+      </div> </div><!-- loader-->
     <p class="divider"></p>
     <div class="container" id="proj">
 
