@@ -42,10 +42,9 @@ var DBConnect = {
         c = DBConnect.token;
         c.usr = localStorage.getItem('usr');
         c.code = 0;
-        //console.log(JSON.stringify(c));
         DBConnect.evm(c, localStorage.getItem('usr'));
         app.cltime(iv);
-        //alert('done');
+        localStorage.setItem('Sync',0); 
         DBConnect.token = null;
         alert("SYncing");
       }

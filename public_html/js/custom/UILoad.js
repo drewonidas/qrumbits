@@ -155,7 +155,7 @@ var UILoad = {
             var l = UILoad.pid + '_' + UILoad.crds.item(a).tid + '_' + UILoad.crds.item(a).cid;
             var base = document.createElement("div");
             console.log('#tid_' + UILoad.pid + '_' + UILoad.crds.item(a).tid);
-            $(base).appendTo('#tid_' + UILoad.pid + '_' + (UILoad.crds.item(a).tid===""?1:UILoad.crds.item(a).tid));
+            $(base).appendTo('#tid_' + UILoad.pid + '_' + parseInt(UILoad.crds.item(a).tid===""?1:UILoad.crds.item(a).tid));
             var crd = $(UILoad.cardTemplate(l, UILoad.crds.item(a).nm, UILoad.crds.item(a).cdesc));
             $(base).replaceWith(crd);
           }

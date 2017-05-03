@@ -171,7 +171,7 @@ if (window.hasOwnProperty('openDatabase')) {
   }
   function v_email() {//testemail
     var email1 =
-            $('#signemail').val();//input box value
+            $('#signemail').val().toLowerCase();//input box value
     var pass = $("#signpass").val();
     var tst = /.+[@].+[\.].+/; //create regex CREATE TABLE people ( uid INTEGER NOT NULL , uname VARCHAR(20) NOT NULL, uemail VARCHAR(72) NOT NULL, upassword VARCHAR(100), PRIMARY KEY (uid) )
     if (tst.test(email1))
@@ -182,8 +182,6 @@ if (window.hasOwnProperty('openDatabase')) {
           localStorage.setItem('usr', response.c);
           UILoad.pid = localStorage.pid;
           localStorage.setItem('rl', response.rl);
-          //search logged users 
-          //DBConnect.getdata('people', '');
           qb.transaction(qb.insert('people', 
           ['uid', 'uemail', 'role'], 
           [response.c, email1, response.rl]));
@@ -284,33 +282,50 @@ if (window.hasOwnProperty('openDatabase')) {
 
   $(document).ready(function () {
     qb.init();
+    $.post("php/newmoduletest.php",{er:1},function(resp){
+          //console.log(resp['taskstatusbars']);
+          if (resp['taskstatusbars'].length>0){
+            for (var xx in resp['taskstatusbar'])
+            db.transaction(function (tx) {
+              tx.executeSql(qb.insert("taskbars",
+                      ['tid', 'pid', 'tname', 'pos'],
+                      [xx['tid'], xx['pid'], '"' + xx['tname'] + '"',xx['pos']]));
+
+
+            }, function (err) {
+              console.log(err);
+            });
+          }
+          
+        },'JSON');
     db.transaction(function (tx) {
       var qry = qb.slct('count(*) as c', 'taskbars');
       var q2 = "SELECT distinct pid,tname FROM taskbars GROUP BY pid ORDER BY pid DESC";
       tx.executeSql(qry, [], function (tx, rs) {
         
+         
         if (rs.rows.length > 0)
           c = rs.rows.item(0).c;
         else
           c = 0;
         localStorage.setItem('c', c);
-        if (c === 0) {
-          db.transaction(function (tx) {
-            tx.executeSql(qb.insert("taskbars",
-                    ['tid', 'pid', 'tname', 'pos'],
-                    [1, 1, '"' + 'todo' + '"', 0]));
-            tx.executeSql(qb.insert("taskbars",
-                    ['tid', 'pid', 'tname', 'pos'],
-                    [2, 1, '"' + 'in-progress' + '"', 1]));
-            tx.executeSql(qb.insert("taskbars",
-                    ['tid', 'pid', 'tname', 'pos'],
-                    [3, 1, '"' + 'done' + '"', 2]));
-            c = 3;
-            localStorage.c = c;
-          }, function (err) {
-            console.log(err);
-          });
-        }
+//        if (c === 0) {
+//          db.transaction(function (tx) {
+//            tx.executeSql(qb.insert("taskbars",
+//                    ['tid', 'pid', 'tname', 'pos'],
+//                    [1, 1, '"' + 'todo' + '"', 0]));
+//            tx.executeSql(qb.insert("taskbars",
+//                    ['tid', 'pid', 'tname', 'pos'],
+//                    [2, 1, '"' + 'in-progress' + '"', 1]));
+//            tx.executeSql(qb.insert("taskbars",
+//                    ['tid', 'pid', 'tname', 'pos'],
+//                    [3, 1, '"' + 'done' + '"', 2]));
+//            c = 3;
+//            localStorage.c = c;
+//          }, function (err) {
+//            console.log(err);
+//          });
+//        }
       });
       
       tx.executeSql(q2, [], function (tx, rs) {
@@ -339,7 +354,7 @@ if (window.hasOwnProperty('openDatabase')) {
       if (UILoad.pid > 0) {
         
         localStorage.setItem("pid", 0);
-        if (parseInt(localStorage.getItem('Sync')) === 1)
+        if (parseInt(localStorage.getItem('Sync')) === -1)
           DBConnect.connect();
         else
           location.reload();
@@ -504,11 +519,12 @@ if (window.hasOwnProperty('openDatabase')) {
           else
             crd = 1;
           var parent = ($(which).parent().parent());
-          console.log(parent.prop('id'));
+          //console.log(parent.prop('id'));
           var name;
           if ((name = prompt("Create New Task"))) {
             var l = gtid(which);
             app.createCard(name, l, parent, crd);
+            localStorage.setItem('Sync',-1);
           }
         } catch (ex) {
           console.log(ex);
