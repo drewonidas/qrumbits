@@ -101,3 +101,7 @@ CREATE TABLE IF NOT EXISTS Qrumb.`EventLog` (
 
 -- ALTER TABLE `TaskStatusBars` ADD FOREIGN KEY (`projectid`) REFERENCES `Project`(`projectid`);
 ALTER TABLE `Tasks` ADD FOREIGN KEY (`taskstatusid`) REFERENCES `TaskStatusBars`(`taskstatusid`);
+
+INSERT INTO Qrumb.Project (projectid,projectname,date_created,date_modified,userid,date_expiring) VALUES (1,"DEFAULT",now(),now(),0,DATE_ADD(NOW(),INTERVAL 1 YEAR)) ON DUPLICATE KEY UPDATE date_modified=now();
+INSERT INTO Qrumb.Project (projectid,projectname,date_created,date_modified,userid,date_expiring) VALUES (2,"TEMPLATE 1",now(),now(),0,DATE_ADD(NOW(),INTERVAL 1 YEAR)) ON DUPLICATE KEY UPDATE date_modified=now();
+INSERT INTO Qrumb.Project (projectid,projectname,date_created,date_modified,userid,date_expiring) VALUES (3,"TEMPLATE 2",now(),now(),0,DATE_ADD(NOW(),INTERVAL 1 YEAR)) ON DUPLICATE KEY UPDATE date_modified=now();

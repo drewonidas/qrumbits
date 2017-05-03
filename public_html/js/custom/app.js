@@ -111,31 +111,16 @@ var app = {
     }
     else if (usr === 0);
      {
-      var q = qb.slct('pid', 'proj', "pid = pid ORDER BY pid DESC LIMIT 1");
+      //var q = qb.slct('pid', 'proj', "pid = pid ORDER BY pid DESC LIMIT 1");
       var nm = $('#ctn').val();
       for(var x = 0;x < 5;x++)
         inp[x] = $('#ct_'+ parseInt(x+1).toString()).val();
-      try{
-        qb.db.transaction(function (tx) {
-          tx.executeSql(q, [], function (tx, rs) {
-            if (rs.rows.length > 0)
-              p = rs.rows.item(0).pid + 1;  
-          });
-        }, function (err) {
-          console.log(err);
-        });
-      }catch (ex){
-        console.log(ex);
-        //pid0();
-      }
       var i = setInterval(function () {
         if (p === 0 || p === undefined)
           p = 1;
         if ((p !== undefined || p !== 0)) {
           window.ct = (window.ct===1)?2:window.ct;
-          var ins = qb.insert("proj",
-                  ['pid', 'pname', 'date_created', 'date_modified', 'status', 'author_id'],
-                  [p, '"' + nm  + '"', 'date()', 'date()', '"a"', '"' + 0 + '"']);
+          localStorage.setItem(nm,window.ct);
           for (var x = 1; x <= window.co; x++){
             var ins0 = qb.insert("taskbars",
                       ['tid', 'pid', 'tname', 'pos'],
@@ -215,11 +200,11 @@ var app = {
   createCard: function (name, spl, parent, c) {
     //TODO: Implement Me 
     var tid = $(parent).attr("id");
-    tid = tid.split('_')[2];
+    var tidn = match(tid);
     this.qb.transaction(this.qb.insert('cards'
             , ['cname', 'tid', 'cdesc', 'assign', 'pid']
-            , ['"' + name + '"', '"' + tid + '"', '""',localStorage.usr, spl[1]]));
-    var l = spl[1] + '_' + spl[2] + '_' + c;
+            , ['"' + name + '"', '"' + (tidn+1) + '"', '""',localStorage.usr, UILoad.pid]));
+    var l =  UILoad.pid+ '_' + tidn + '_' + c;
     var newchild = UILoad.cardTemplate(l, name);
     $(parent).append(newchild);
     console.log("ceateC", parent);
@@ -313,24 +298,40 @@ var app = {
     UILoad.placeCards();
   },
   /**
-   * @param type {} 
+   * @param tp {} 
    * @param id {} 
    * @param  {integer} 
    * @return {null}
    */
-  delete: function (type, id) {
+  delete: function (tp, id) {
     //TODO: Implement Me 
-    app.qb.db.transaction(function (tx){//for speed
-      tx.executeSql("delete from proj");
-      tx.executeSql("delete from taskbars");
-      tx.executeSql("delete from templates");
-      tx.executeSql("delete from cards");
-    });
-    localStorage.setItem("pid", 0);
-    localStorage.setItem("c", 0);
-    localStorage.setItem("ct", 0);
-    localStorage.setItem("Sync", 1);
-    setTimeout(function (){location.reload();},app.qt);
+    if (id === undefined)
+      id = UILoad.pid;
+    if (tp === 'pid'){
+      $.post("php/data_rm.php",{submit:1,all:id},function(rx){
+        app.qb.db.transaction(function (tx){
+          tx.executeSql("DELETE FROM proj WHERE pid = "+id);
+          //tx.executeSql("delete from taskbars");
+          tx.executeSql("DELETE FROM templates WHERE pid = "+id);
+          tx.executeSql("DELETE FROM cards WHERE pid = "+id);
+          setTimeout(function (){location.reload();},app.qt*2);
+        });
+        console.log(rx.msg);
+      },"JSON");
+      localStorage.setItem("pid", 0);
+      localStorage.setItem("c", 0);
+      localStorage.setItem("ct", 0);
+      localStorage.setItem("Sync", 1);
+      
+    }else if (tp === 'ts')
+    {
+      $.post("php/data_rm.php",{submit:2,cid:id},function(rx){
+        app.qb.db.transaction(function (tx){
+          tx.executeSql("DELETE FROM  cards WHERE cid = "+id);
+        });
+        alert(rx.msg);
+      },"JSON");
+    }
     
   }
 };

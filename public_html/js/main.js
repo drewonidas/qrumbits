@@ -2,10 +2,10 @@
  * @description Created on : 18-04-2017
  * app UILoad Q_ueryBuild implemented to Suppress Errors Dev-Time
  * */
-var app = app || {};
-var UILoad = UILoad || {};
-var Q_ueryBuild = Q_ueryBuild || {};
-var DBConnect = DBConnect || {};
+var app= app||{};
+var Q_ueryBuild= Q_ueryBuild||{};
+var UILoad= UILoad||{};
+var DBConnect= DBConnect||{};
 var lg = false;
 var qb = app.qb;
 var db = qb.db;
@@ -284,50 +284,49 @@ if (window.hasOwnProperty('openDatabase')) {
     qb.init();
     $.post("php/newmoduletest.php",{er:1},function(resp){
           //console.log(resp['taskstatusbars']);
-          if (resp['taskstatusbars'].length>0){
-            for (var xx in resp['taskstatusbar'])
-            db.transaction(function (tx) {
-              tx.executeSql(qb.insert("taskbars",
-                      ['tid', 'pid', 'tname', 'pos'],
-                      [xx['tid'], xx['pid'], '"' + xx['tname'] + '"',xx['pos']]));
-
-
-            }, function (err) {
-              console.log(err);
-            });
+          db.transaction(function (tx) {
+          if (resp.hasOwnProperty('taskstatusbars')){
+            for (var xx in resp['taskstatusbars']){
+              var r = resp['taskstatusbars'][xx];
+                tx.executeSql(qb.insert("taskbars",
+                        ['tid', 'pid', 'tname', 'pos'],
+                        [r['tid'], r['pid'], '"' + r['tname'] + '"',r['pos']]));
+                        
+              
+            }
+            c = resp['taskstatusbars'].length || 0;
           }
-          
+          }, function (err) {
+                console.log(err);
+              });
         },'JSON');
     db.transaction(function (tx) {
       var qry = qb.slct('count(*) as c', 'taskbars');
       var q2 = "SELECT distinct pid,tname FROM taskbars GROUP BY pid ORDER BY pid DESC";
       tx.executeSql(qry, [], function (tx, rs) {
-        
-         
         if (rs.rows.length > 0)
           c = rs.rows.item(0).c;
         else
           c = 0;
         localStorage.setItem('c', c);
-//        if (c === 0) {
-//          db.transaction(function (tx) {
-//            tx.executeSql(qb.insert("taskbars",
-//                    ['tid', 'pid', 'tname', 'pos'],
-//                    [1, 1, '"' + 'todo' + '"', 0]));
-//            tx.executeSql(qb.insert("taskbars",
-//                    ['tid', 'pid', 'tname', 'pos'],
-//                    [2, 1, '"' + 'in-progress' + '"', 1]));
-//            tx.executeSql(qb.insert("taskbars",
-//                    ['tid', 'pid', 'tname', 'pos'],
-//                    [3, 1, '"' + 'done' + '"', 2]));
-//            c = 3;
-//            localStorage.c = c;
-//          }, function (err) {
-//            console.log(err);
-//          });
-//        }
+        if (c === 0) {
+          db.transaction(function (tx) {
+            tx.executeSql(qb.insert("taskbars",
+                    ['tid', 'pid', 'tname', 'pos'],
+                    [1, 1, '"' + 'todo' + '"', 0]));
+            tx.executeSql(qb.insert("taskbars",
+                    ['tid', 'pid', 'tname', 'pos'],
+                    [2, 1, '"' + 'in-progress' + '"', 1]));
+            tx.executeSql(qb.insert("taskbars",
+                    ['tid', 'pid', 'tname', 'pos'],
+                    [3, 1, '"' + 'done' + '"', 2]));
+            c = 3;
+            localStorage.c = c;
+          }, function (err) {
+            console.log(err);
+          });
+        }
       });
-      
       tx.executeSql(q2, [], function (tx, rs) {
         if (rs.rows.length > 0)
           ct = rs.rows.item(0).pid + 1;
@@ -395,21 +394,27 @@ if (window.hasOwnProperty('openDatabase')) {
     app.app();
   }
   function del(th){
-    console.log($(th).parent().parent().prop('id'));
+    //console.log($(th).parent().parent().prop('id'));
+    var xx = $(th).parent().parent().attr('id').split('_');
+    var sp = xx[xx.length-1];
+    var tp = xx[0];
+    app.delete(tp,sp);
     $(th).parent().parent().remove();
+    //console.log(tp,sp);
   }
   function viewToggle() {
     if (UILoad.pid === 0) {//might cause errors
       $('#proj').hide();
       $('#landing').show();
       $("title").text("Landing");
-
+      $('#smenu').removeClass("hidden");
       //console.log("land view");
     } else {
       $('#proj').show();
       $('#landing').hide();
       $("title").text("Project");
-
+      $('#smenu').addClass("hidden");
+      $('#srch').addClass('hidden');
       //console.log("proj view");
     }
 
@@ -434,7 +439,6 @@ if (window.hasOwnProperty('openDatabase')) {
   }
 
   function proj() {
-    //alert('proj id='+($(ts).attr('id').split('_')[1] -1));
     if ($('#role').val() === 't')
       $('#mnu').modal('show');
     if ($('#role').val() === 'm')
@@ -478,6 +482,7 @@ if (window.hasOwnProperty('openDatabase')) {
     $("#ct_3t").hide();
     $("#ct_4t").hide();
     $("#ct_5t").hide();
+    window.ct =  localStorage.ct;
   }
 
   function atsb(th)//add column
@@ -522,7 +527,7 @@ if (window.hasOwnProperty('openDatabase')) {
           //console.log(parent.prop('id'));
           var name;
           if ((name = prompt("Create New Task"))) {
-            var l = gtid(which);
+            var l;
             app.createCard(name, l, parent, crd);
             localStorage.setItem('Sync',-1);
           }
@@ -558,35 +563,44 @@ if (window.hasOwnProperty('openDatabase')) {
     ev.preventDefault();
 
     //console.log(app.cards);
-    if (match(ev.srcElement.id)) {
+    //if (match(ev.srcElement.id)) {
       $(ev.target).append($('#' + co));
       qb.transaction(qb.update('cards'
-              , "tid = '" + ev.srcElement.id.split('_')[2] + "'"
+              , "tid = '" + (match(ev.srcElement.id) + 1) + "'"
               , 'cid', '"' + co.split('_')[3] + '"'));
-      console.log(qb.update('cards'
-              , "tid = '" + ev.srcElement.id.split('_')[2] + "'"
-              , 'cid', '"' + co.split('_')[3] + '"'));
+//      console.log(qb.update('cards'
+//              , "tid = '" + (match(ev.srcElement.id) + 1)+ "'"
+//              , 'cid', '"' + co.split('_')[3] + '"'));
       setTimeout(function () {
         localStorage.setItem("Sync",-1);
       }, app.qt);//needs testing // working *i3 4th gen chrome 1.7ghz
-    }
+    //}
   }
   function gtid(ths) {//get parent
     var parent = ($(ths).parent());
-    while (!match(parent.attr('id')))
+    var counter = 0;
+    while (!match(parent.attr('id'))){
       parent = parent.parent();
+      counter++;
+      if (counter > 6)break;
+    }
+    if (counter > 6)console.log("Tid Not Found");
     var tid = $(parent).attr("id");
-    console.log(tid);
+    //console.log(tid);
     var spl = tid.split("_");
     return (spl);
   }
   function adv(ths) {
-    var spl = gtid(ths);
-    var txt = '#' + app.colNames[(spl[2]) % app.colNames.length];
-    $(txt).append($('#'+$(ths).parent().attr('id')));
-    console.log("advs",txt, app.colNames[spl[2] % app.colNames.length], $(ths).parent().attr('id').toString().split('_')[3]);
-    app.editCard($(ths).parent().attr('id').toString().split('_')[3],
-            'tid', ((spl[2] % app.colNames.length) + 1));
+    //var spl = gtid(ths);
+    var tar = ($(ths).parent().parent().attr('id'));
+    console.log(match(tar),tar,window.app.colNames);
+    
+    var txt =  app.colNames[(match(tar) + 1)%app.colNames.length];
+    $('#' + txt).append($('#'+$(ths).parent().attr('id')));
+    var pnt = match(txt);
+//    console.log("advs",txt, app.colNames[spl[2]], $(ths).parent().attr('id').toString().split('_')[3]);
+    app.editCard($(ths).parent().attr('id').split('_')[3],
+            'tid', ((pnt % app.colNames.length) + 1));//app.editCard
     
     setTimeout(function () {
       //$('#'+$(ths).parent().attr('id')).remove();
@@ -597,7 +611,7 @@ if (window.hasOwnProperty('openDatabase')) {
   function match(pnt) {
     for (var a = 0; a < app.colNames.length; a++)
       if (pnt === app.colNames[a])
-        return true;
+        return a;
     return false;
   }
   function pid0() {
@@ -617,6 +631,28 @@ if (window.hasOwnProperty('openDatabase')) {
     console.log($("#proj").children().first().attr('id'));
     //$("#proj").children().first().addClass('');
     //$("#proj:nth-child(2)").prop('id');
+  }
+  function lSearch(){
+    var src = $('#srch').val();
+    var qry =  qb.slct("DISTINCT pid,pname","proj","pname LIKE '%"+ src +"%' OR pDesc LIKE '%" + src +"%'");
+    if (src.length >= 2){
+      db.transaction(function (tx){console.log(src,src.length);
+        tx.executeSql(qry,[],function (tx,rx){
+          $('#smenu').removeClass("hidden");
+          $('#smenu').empty();
+          console.log(src);
+          if (rx.rows.length > 0)
+              for(var xx = 0; xx <rx.rows.length;xx++)
+                $('#smenu').append("<li id='pid_"+ rx.rows.item(xx).pid
+                    +"' class='btn btn-success ' onclick='projSelected(this)'>"+
+                     rx.rows.item(xx).pname+"</li>");
+
+        });
+      });
+    }else{
+      $('#smenu').addClass("hidden");
+      $('#smenu').empty();
+    }
   }
 } else {
   if (!window.hasOwnProperty('openDatabase'))

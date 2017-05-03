@@ -183,13 +183,42 @@ class App
   }
 
   /**
-   * @param void $type
-   * @param void $id
-   * @return integer
+   * @param int $type 1) = tasks cards 2) project 
+   * @param int $id the project id involved
+   * @return PDOStatement
    */
   public function delete($type, $id)
   {
-    // TODO: implement here
-    return null;
+    $qb = new Q_ueryBuild();$db = $qb->db;$rs = null;
+    switch ($type) {
+      case 1:
+        $rs = $this->filter($id, $db);
+        break;
+      case 2:
+        $rs = $db->query("DELETE FROM Qrumb.Project WHERE projectid = {$id} AND (userid = {$_SESSION['c']})");
+        break;
+      case 3:
+        $rs = $db->query("DELETE FROM Qrumb.Permissions WHERE project_id = {$id} AND (userid = {$_SESSION['c']})");
+        break;
+      case 4:
+        $rs = $db->query("DELETE FROM Qrumb.Templates WHERE projectid = {$id} AND"
+          . " (project_userid = {$_SESSION['c']} AND Template_userid = 0)");
+        break;
+      default:
+        break;
+    }
+    return $rs;
+    
+  }
+  
+  public function filter($Projid,$db)
+  {
+    if ($this->qt == 0){
+      return $db->query("DELETE FROM Qrumb.Tasks WHERE projectid = {$Projid} AND"
+          . " (userid = {$_SESSION['c']} OR assign = {$_SESSION['c']})");
+    }
+    return $db->query("DELETE FROM Qrumb.Tasks WHERE "
+          . " (userid = {$_SESSION['c']} OR assign = {$_SESSION['c']})"
+          . "AND taskid = {$this->qt}");
   }
 }

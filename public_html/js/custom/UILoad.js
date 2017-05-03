@@ -53,7 +53,7 @@ var UILoad = {
         app.colNames.push($($("#proj").children().get(a)).attr("id"));
       }
       beautifier();
-    }, app.qt);
+    }, app.qt*2);
   },
   /**
    * @param  {text} l special tag 
@@ -117,7 +117,7 @@ var UILoad = {
             ID + "'");
     app.qb.db.transaction(function (tx) {
       tx.executeSql(q, [], function (tx, rs) {
-        console.log(rs, "websql select id");
+        //console.log(rs, "websql select id");
         UILoad.prj = rs.rows;
         $("#project").text(">> " + rs.rows.item(0).nm);//register spec change
       });
@@ -137,15 +137,17 @@ var UILoad = {
             ID + "' and taskbars.pid = templates.t_pid and templates.pid = proj.pid");
     //SELECT tname,proj.pid,pos from taskbars, proj, templates
     //where taskbars.pid = templates.t_pid and templates.pid = proj.pid
-
+    var size = 3;
     var q0 = app.qb.slct(["cid", 'cname as nm', 'tid', 'cdesc'], "cards", "pid ='" +
             ID + "' and assign =" + localStorage.usr);
     app.qb.db.transaction(function (tx) {
       tx.executeSql(q, [], function (tx, rs) {
         UILoad.tsb = rs.rows;
         //console.log("tsb count");
+        if (UILoad.tsb.length >= 4)
+          size = 2;
         for (var a = 0; a < UILoad.tsb.length; a++) {
-          var ts = UILoad.placeTaskBar(UILoad.tsb, UILoad.pid, a);
+          var ts = UILoad.placeTaskBar(UILoad.tsb, UILoad.pid, a,size);
           $("#proj").append(ts);
         }
         tx.executeSql(q0, [], function (tx, rs) {
@@ -154,8 +156,8 @@ var UILoad = {
           for (var a = 0; a < UILoad.crds.length; a++) {
             var l = UILoad.pid + '_' + UILoad.crds.item(a).tid + '_' + UILoad.crds.item(a).cid;
             var base = document.createElement("div");
-            console.log('#tid_' + UILoad.pid + '_' + UILoad.crds.item(a).tid);
-            $(base).appendTo('#tid_' + UILoad.pid + '_' + parseInt(UILoad.crds.item(a).tid===""?1:UILoad.crds.item(a).tid));
+            //console.log('#tid_' + UILoad.pid + '_' + UILoad.tsb.item(UILoad.crds.item(a).tid - 1).tid);
+            $(base).appendTo('#tid_' + UILoad.pid + '_' + parseInt(UILoad.tsb.item(UILoad.crds.item(a).tid-1).tid===""?1:UILoad.tsb.item(UILoad.crds.item(a).tid -1).tid));
             var crd = $(UILoad.cardTemplate(l, UILoad.crds.item(a).nm, UILoad.crds.item(a).cdesc));
             $(base).replaceWith(crd);
           }
