@@ -29,7 +29,7 @@ class Q_ueryBuild
 
   public function setdsn($con = 'mysql', $url = 'localhost') {
     $this->user = "cm9vdA=="; //base64 obfuscicated
-    $this->pwd = "cGFzc3dvcmQ=";//"cm9vdDEyMzQ=";
+    $this->pwd = "cm9vdDEyMzQ=";
     $this->dsn0 = "$con:host=$url;";
     $this->dsn1 = $this->dsn0 . 'name=Qrumb;';
   }

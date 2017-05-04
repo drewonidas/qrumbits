@@ -111,7 +111,6 @@ var app = {
     }
     else if (usr === 0);
      {
-      //var q = qb.slct('pid', 'proj', "pid = pid ORDER BY pid DESC LIMIT 1");
       var nm = $('#ctn').val();
       for(var x = 0;x < 5;x++)
         inp[x] = $('#ct_'+ parseInt(x+1).toString()).val();
@@ -126,7 +125,6 @@ var app = {
                       ['tid', 'pid', 'tname', 'pos'],
                       [parseInt(x+parseInt(c)), window.ct , '"' + inp[x-1] + '"', x-1]);
             app.qb.transaction(ins0);
-            //console.log(ins0,inp[x-1]);
           }
           localStorage.ct++;
           app.qb.transaction(ins);
