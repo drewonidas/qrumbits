@@ -1,3 +1,3 @@
 #!/bin/sh
-sh .\/fix.sh 
-python lsnd.py 
+python lsnd.py
+sh fix.sh 

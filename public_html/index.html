@@ -19,52 +19,49 @@
       }
     </style>
     <link rel="stylesheet" href="css/main.css">
-    <script src="js/vendor/jquery-1.11.2.js" type="text/javascript"></script>
+    <script src="js/vendor/jquery-2.2.4.js" type="text/javascript"></script>
   </head>
   <body>
     <!--[if lt IE 8]>
-    <p class="browserupgrade">You are using an <strong>outdated</strong>
+    <p class="browserupgrade">You are using an <strong>Unsupported</strong>
         browser. Please <a href="http://browsehappy.com/">upgrade your browser</a>
         to improve your experience.</p>
     <![endif]-->
     <nav class="navbar navbar-inverse navbar-fixed-top" role="navigation">
       <div class="container">
         <div class="navbar-header">
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+          <a  class="navbar-toggle collapsed" data-toggle="collapse"
                   data-target="#navbar" aria-expanded="false" aria-controls="navbar">
             <span class="sr-only">Toggle navigation</span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
-          </button>
+          </a>
           <a class="navbar-brand" href="#">Q_rumBits 	<span id="project"></span> </a>
         </div>
-        <div  id="navbar" class="navbar-collapse collapse">
-          
-          <form id="nvb" class="navbar-form navbar-right hidden" role="form">
-            <div class="form-group">
-              
-            </div>
-
-            <div class="form-group form-control btn-info" >
-              
+        <div  id="navbar" class="navbar-collapse collapse">          
+          <div id="nvb" class="navbar-form navbar-right hidden" role="form">
+            
+            <input id="srch" class="form-control" placeholder="Search Projects" oninput='lSearch()'/>
+            <ul class="drpdown-content hidden" id='smenu'>
+            </ul>
+            
+            <div class="form-group form-control" >
               <label class="form-inline"> Role: </label>
-              <select id="role" class="form-inline btn-default" onchange="message('to be Implemented',this)">
+              <select id="role" class="form-inline btn-default" onchange="message('changed role',this)">
                 <option value="t">Member</option>
                 
               </select>
             </div>
             <div class="form-control" style="height:3em">hello <span id="nm"></span>,
-              <button type="submit" class="btn btn-sm btn-success" id="lvl">X </button></div>
-            <div class="form-group">
-              <input type="submit" class="btn btn-success hidden" onclick="DBConnect.connect()"
-                     value="BackUp">
-            </div>
-
-            <button type="submit" onclick="app.delete()" class="btn btn-danger hidden">
+              <button class="btn btn-sm btn-danger" id="lvl">X </button></div>
+            <div class="form-group-sm">
+              <button class="btn btn-success btn-xs hidden" onclick="DBConnect.connect()">
+                BackUp</button>
+              <button onclick="app.delete()" title="When Debbugging" class="btn btn-danger btn-xs hidden">
               complete reset</button>
-
-          </form>
+            </div>
+          </div>
         </div><!--/.navbar-collapse -->
       </div>
     </nav>
@@ -77,7 +74,6 @@
           <input id="signemail" type="email" class="form-control" title="enter email here" placeholder="Email">
           <input id="signpass" type="password"  class="form-control" oninput="verify()"
                  data-placement="left" title="enter password here" placeholder="Password">
-          <!--<div class="tooltip" role="tooltip" id="passe">password cant not be empty</div>-->
           <button class="form-control btn btn-info" onclick="sign_in()">Sign in or Register</button>
 
         </div>
@@ -155,12 +151,33 @@
       <div class="modal-content modal-dialog modal-sm form-group" >
         <div class="modal-header"> Template List
           <button id="e" class="close" data-dismiss="modal">x</button>
-        </div><div class="form-group-sm container-fluid"><div class="form-group">
+        </div><div class="form-group-sm container-fluid" id="tmladd">
+          <div class="form-group">
             <button class="btn btn-success form-control" onclick="create()">Default</button>
           </div>
         </div>
       </div>
-    </div><!--create project modal-->
+    </div><!--create project templates-->
+    <div class=" modal " id="consync" style="margin-top: 4em">
+      <div class="modal-content modal-dialog modal-sm form-group" >
+        <div class="modal-header"> Confirm Sync
+          <button id="e" class="close" data-dismiss="modal">x</button>
+        </div>
+        
+        <div class="form-group-sm container-fluid">
+          <label class="well">Seems like from last login data did not sync well. Would You like to attempt to resolve?</label>
+          
+          <button class="btn btn-success" onclick="resolver()">RESOLVE</button>
+          <button class="btn btn-danger  pull-right" onclick="overwrite()">OVERWRITE</button>
+          
+        </div>
+      </div>
+    </div><!--confirm sync-->
+    <div class="modal " id="loading">
+      <div class="">
+      <img class="center-block img-circle hfs" src="loading.gif" alt="">
+      <h1 class="center-block modal-content modal-sm text-center"> Syncing </h1>
+      </div> </div><!-- loader-->
     <p class="divider"></p>
     <div class="container" id="proj">
 
@@ -170,8 +187,8 @@
     <footer>
       <p class="text-center"> Q_rumBits   &copy;2017</p>
     </footer>
-    <script>if (localStorage.hasOwnProperty("pid") && localStorage.hasOwnProperty("usr"))
-              $("#login").addClass("hidden");
+    <script>//if (localStorage.hasOwnProperty("pid") && localStorage.hasOwnProperty("usr"))
+              //$("#login").addClass("hidden");
     </script>
     <script> if (!window.hasOwnProperty('openDatabase'))
             nop;</script>
@@ -180,6 +197,7 @@
     <script src="js/custom/app.js" type="text/javascript"></script>
     <script src="js/custom/UILoad.js" type="text/javascript"></script>
     <script src="js/custom/DBConnect.js"></script>
+    <script src="js/custom/Logger.js"></script>
     <script src="js/main.js"></script>
   </body>
 </html>

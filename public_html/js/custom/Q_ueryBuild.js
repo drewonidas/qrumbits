@@ -11,6 +11,7 @@ var Q_ueryBuild = {
   transaction: function (q) {
     this.db.transaction(function (tx) {
       tx.executeSql(q);
+      //console.log(q);
     }, function (er) {
       console.log(er, q);
     });
@@ -108,13 +109,15 @@ var Q_ueryBuild = {
   arrayJustify: function (obj) {
     //TODO: Implement Me
     var qs = '';
-    if (!obj.hasOwnProperty("substr")) {
-      qs += obj;
+    if (obj!==undefined) {
+      if(!obj.hasOwnProperty("substr"))
+        qs += obj;
     } else /*if (obj.hasOwnProperty("length")) */ {
-      if (obj[0] !== undefined)
+      if ((obj[0]) !== undefined && obj.hasOwnProperty("length")){
         qs += obj[0];
-      for (var a = 1; a < obj.length; a++) {
-        qs += ", " + obj[a];
+        for (var a = 1; a < obj.length; a++) {
+          qs += ", " + (obj[a]===undefined?null:obj[a]);
+        }
       }
     }
     return qs;
@@ -126,8 +129,9 @@ var Q_ueryBuild = {
    * @return qs{null}
    */
   insert: function (tble, cols, vals) {
-    //TODO: Implement Me
-    var qs = "INSERT INTO ";
+    //TODO: Implement Me --dangerous
+    //console.log('datas',cols,vals);
+    var qs = "INSERT or REPLACE INTO ";
     qs += tble + "(";
     qs += this.arrayJustify(cols);
     qs += ") VALUES (";
