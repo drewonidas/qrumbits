@@ -190,7 +190,11 @@ if (window.hasOwnProperty('openDatabase')) {
           app.app();
           localStorage.setItem("count", 0);
         } else if (response.userstatus === -1) {
-          rg(email1);
+          if (localStorage.count == 1)
+            rg(email1);
+          else
+            message("Please Check Your Email or Click on < Sign in or Register > to proceed to registration",$('#signemail'));
+          localStorage.setItem("count", 1);
         } else {
           if (localStorage.count === undefined ||
                   parseInt(localStorage.getItem("count")) < 3) {
