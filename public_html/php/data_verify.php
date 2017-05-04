@@ -24,7 +24,7 @@ $qb = new Q_ueryBuild();
 
 if (preg_match("/.+[@].+[.].+/", filter_input(INPUT_POST, 'email'))) {
   $email = filter_input(INPUT_POST, 'email');
-  $res = $app->v_email($email,$qb,$res);
+  $res = $app->v_email(trim($email),$qb,$res);
 } else {
   $_SESSION['state'] = 0;
 }
@@ -76,7 +76,7 @@ if (isset($_SESSION['state']) ) {
                   preg_match("/[m|t]/", 
                   filter_input(INPUT_POST, 'role')) && $_SESSION['state'] == 0
                   ) {
-    $email = filter_input(INPUT_POST, 'email');
+    $email = trim(filter_input(INPUT_POST, 'email'));
     $role = filter_input(INPUT_POST, 'role');
     $usrname = filter_input(INPUT_POST, 'username');
     try {
