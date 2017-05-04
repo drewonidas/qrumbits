@@ -124,7 +124,7 @@ var app = {
           for (var x = 1; x <= window.co; x++){
             var ins0 = qb.insert("taskbars",
                       ['tid', 'pid', 'tname', 'pos'],
-                      [x+c, window.ct , '"' + inp[x-1] + '"', x-1]);
+                      [parseInt(x+parseInt(c)), window.ct , '"' + inp[x-1] + '"', x-1]);
             app.qb.transaction(ins0);
             //console.log(ins0,inp[x-1]);
           }
