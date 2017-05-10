@@ -127,7 +127,6 @@ var app = {
             app.qb.transaction(ins0);
           }
           localStorage.ct++;
-          app.qb.transaction(ins);
           var base = document.createElement("div");
           //console.log("#tid_0_p0");
           $(base).appendTo('#tid_0_p0');
@@ -135,7 +134,6 @@ var app = {
           var crd = UILoad.projCard(p,nm,"template");
           $(base).replaceWith(crd);
           app.cltime(i);
-          console.log(ins0, ins);
           ctpclean();
         }
       }, app.qt);

@@ -489,9 +489,8 @@ if (window.hasOwnProperty('openDatabase')) {
     window.ct =  localStorage.ct;
   }
 
-  function atsb(th)//add column
+  function atsb(th)
   {
-    //message(" to be implemented",th);
     switch (co)
     {
       case 5:
@@ -567,7 +566,7 @@ if (window.hasOwnProperty('openDatabase')) {
     ev.preventDefault();
 
     //console.log(app.cards);
-    //if (match(ev.srcElement.id)) {
+    if (match(ev.srcElement.id)) {
       $(ev.target).append($('#' + co));
       qb.transaction(qb.update('cards'
               , "tid = '" + (match(ev.srcElement.id) + 1) + "'"
@@ -578,7 +577,7 @@ if (window.hasOwnProperty('openDatabase')) {
       setTimeout(function () {
         localStorage.setItem("Sync",-1);
       }, app.qt);//needs testing // working *i3 4th gen chrome 1.7ghz
-    //}
+    }
   }
   function gtid(ths) {//get parent
     var parent = ($(ths).parent());
