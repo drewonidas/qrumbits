@@ -19,6 +19,11 @@ __B) Setting up mysql credentials__
    >>-$ echo -n "P@ssw0rd" | base64
 3) set credentials in the function Q_ueryBuild::setdsn
     ...
-    >>-$this->user = 'cm9vdA==';
-    >>-$this->pwd = 'cm9vdDEyMzQ=';
+    >> $this->user = 'cm9vdA==';
+    >> $this->pwd = 'cm9vdDEyMzQ=';
 
+__TECH STACK__
+1) >> Web SQL
+2) >> BOOTSTRAP & JQUERY
+3) >> MySQL
+4) >> PHP
