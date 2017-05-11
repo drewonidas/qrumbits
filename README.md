@@ -8,7 +8,7 @@ __A) Instructions to Install and run__
 1) pull to predetermined folder
 2) copy the contents of ./publichtml to webserver directory,
 3) if ./php/ready.x exists delete the file.
-4) setup mysql database credential.. see part __B)__ 
+4) setup mysql database credentials.. see part __B)__ 
 5) then get working :-)
 
 __B) Setting up mysql credentials__
@@ -20,6 +20,7 @@ __B) Setting up mysql credentials__
 3) set credentials in the function Q_ueryBuild::setdsn
     ...
     >> $this->user = 'cm9vdA==';
+    ...
     >> $this->pwd = 'cm9vdDEyMzQ=';
 
 __TECH STACK__
